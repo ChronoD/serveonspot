@@ -18,9 +18,9 @@ public class ServeonspotApplication {
     @Bean
     public CommandLineRunner demo(SpecialistRepository specialistRepository) {
         return (args) -> {
-            specialistRepository.save(new Specialist());
-            specialistRepository.save(new Specialist());
-            specialistRepository.save(new Specialist());
+            specialistRepository.save(new Specialist(Long.valueOf(0)));
+            specialistRepository.save(new Specialist(Long.valueOf(1)));
+            specialistRepository.save(new Specialist(Long.valueOf(2)));
         };
     }
 }
