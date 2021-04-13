@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,11 +18,11 @@ public class Specialist {
     private Long specialistId;
     private boolean isWorking;
 
-    @OneToMany
-    private List<Customer> customers;
+//    @OneToMany
+//    private List<Customer> customers=new ArrayList<>();
 
     public Specialist(Long specialistId) {
-        this.specialistId = specialistId + 1;
+        this.specialistId = specialistId;
         this.isWorking = true;
     }
 
@@ -31,7 +32,7 @@ public class Specialist {
 
     private void endServing(Customer customer) {
         customer.endServing(this);
-        customers.add(customer);
+//        customers.add(customer);
     }
 
     private void cancelServing(Customer customer) {

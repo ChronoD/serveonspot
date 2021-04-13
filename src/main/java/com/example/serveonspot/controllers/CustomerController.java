@@ -6,6 +6,7 @@ import com.example.serveonspot.services.PublicWaitingList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
@@ -23,7 +24,7 @@ public class CustomerController {
         this.publicWaitingList = publicWaitingList;
     }
 
-    //@Authorized
+    @PreAuthorize("hasAnyRole('ROLE_0')")
     @GetMapping
     public Flux<ServerSentEvent<String>> getAllWaitingCustomers(@RequestParam(required = false) Integer lineLength) {
         return Flux.interval(Duration.ofSeconds(5))

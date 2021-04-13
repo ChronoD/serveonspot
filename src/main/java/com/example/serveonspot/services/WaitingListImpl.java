@@ -1,6 +1,5 @@
 package com.example.serveonspot.services;
 
-import com.example.serveonspot.bin.EventService;
 import com.example.serveonspot.entities.Customer;
 import com.example.serveonspot.entities.CustomerPosition;
 import com.example.serveonspot.entities.Specialist;
@@ -14,16 +13,14 @@ import java.util.*;
 public class WaitingListImpl implements PublicWaitingList, PrivateWaitingList {
     private final SpecialistRepository specialistRepository;
     private final CustomerRepository customerRepository;
-    private final EventService eventService;
     private final Deque<Customer> customerDeque = new ArrayDeque<>();
     private final Deque<Specialist> specialistDeque = new ArrayDeque<>();
 
-    public WaitingListImpl(SpecialistRepository specialistRepository, CustomerRepository customerRepository, EventService eventService) {
+    public WaitingListImpl(SpecialistRepository specialistRepository, CustomerRepository customerRepository) {
         this.specialistRepository = specialistRepository;
-        this.eventService = eventService;
         this.customerRepository = customerRepository;
-
     }
+
 
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.serveonspot.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -11,41 +12,39 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private CustomAuthenticationProvider authProvider;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers(HttpMethod.GET,"/customers").authenticated()
+                .antMatchers("/specialists").permitAll()
+                .antMatchers(HttpMethod.POST, "/customers").permitAll()
                 .antMatchers("/customers/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/specialists").permitAll()
-                .antMatchers("/specialists/**")
-                .authenticated()
-
-//             .hasRole("MANAGER")
+                .antMatchers("/console/**").permitAll()
+                .antMatchers("/register").authenticated()
+                .anyRequest().authenticated()
                 .and()
                 .httpBasic()
+                .and()
+                .headers().frameOptions().disable()
                 .and()
                 .csrf().disable();
     }
 
+//
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) {
+//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+//        authProvider.setUserDetailsService(userDetailsService());
+//        authProvider.setPasswordEncoder(passwordEncoder());
+//        auth.authenticationProvider(authProvider);
+//    }
+
     @Override
-    protected void configure(AuthenticationManagerBuilder auth)
-            throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("10")
-                .password("{noop}10")
-                .roles("SPECIALIST")
-                .and()
-                .withUser("25")
-                .password("{noop}25")
-                .roles("SPECIALIST")
-                .and()
-                .withUser("45")
-                .password("{noop}45")
-                .roles("SPECIALIST")
-                .and()
-                .withUser("manager")
-                .password("{noop}manager")
-                .roles("MANAGER");
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authProvider);
     }
+
 
 }
