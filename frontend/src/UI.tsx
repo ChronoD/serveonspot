@@ -6,18 +6,34 @@ import {
 
 interface Props {}
 
-export function UI({}: Props) {
-  const [customers, setCustomers] = useState<
-    { customerId: number }[] | undefined
-  >(undefined);
+export interface Customer {
+  customerId: number;
+}
 
-  const [specialists, setSpecialists] = useState<
-    { specialistId: number }[] | undefined
-  >(undefined);
+export interface Specialist {
+  specialistId: number;
+}
+
+export function UI({}: Props) {
+  const [customers, setCustomers] = useState<Customer[] | undefined>(undefined);
+
+  const [specialists, setSpecialists] = useState<Specialist[] | undefined>(
+    undefined
+  );
+
+  function updateCustomers(customers: Customer[]): void {
+    setCustomers(customers);
+  }
+
+  function updateSpecialists(specialists: Specialist[]): void {
+    setSpecialists(specialists);
+  }
+  console.log(customers);
+  console.log(specialists);
 
   useEffect(() => {
-    initializeSpecialistsSource(setSpecialists);
     initializeCustomersSource(setCustomers);
+    initializeSpecialistsSource(setSpecialists);
   }, []);
 
   return (

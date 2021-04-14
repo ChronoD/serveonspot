@@ -1,8 +1,9 @@
 import axios from "axios";
+import { Customer, Specialist } from "../UI";
 
 export function getSpecialistsHi(setData: (data: any) => void) {
   return axios
-    .get(`http://localhost:8080/specialists/hi`, {
+    .get(`http://localhost:8080/api/specialists/hi`, {
       headers: { "Access-Control-Allow-Origin": "*" },
     })
     .then((res) => {
@@ -13,9 +14,11 @@ export function getSpecialistsHi(setData: (data: any) => void) {
     });
 }
 
-export function initializeSpecialistsSource(setSpecialists: any) {
+export function initializeSpecialistsSource(
+  setSpecialists: (specialists: Specialist[]) => void
+) {
   const specialistsSource = new EventSource(
-    "http://localhost:8080/specialists"
+    "http://127.0.0.1:8080/api/specialists"
   );
   specialistsSource.onerror = () => {
     if (specialistsSource.readyState === 2) {
@@ -23,19 +26,27 @@ export function initializeSpecialistsSource(setSpecialists: any) {
     }
   };
   specialistsSource.onmessage = (message) => {
+    console.log(message);
+
     const data = JSON.parse(message.data);
     setSpecialists(data);
   };
 }
 
-export function initializeCustomersSource(setCustomers: any) {
-  const customersSource = new EventSource("http://localhost:8080/customers");
+export function initializeCustomersSource(
+  setCustomers: (customers: Customer[]) => void
+) {
+  const customersSource = new EventSource(
+    "http://127.0.0.1:8080/api/customers"
+  );
   customersSource.onerror = () => {
     if (customersSource.readyState === 2) {
       setTimeout(initializeSpecialistsSource, 300);
     }
   };
   customersSource.onmessage = (message) => {
+    console.log(message);
+
     const data = JSON.parse(message.data);
     setCustomers(data);
   };
