@@ -1,18 +1,17 @@
 package com.example.serveonspot.controllers;
 
+import com.example.serveonspot.entities.Customer;
 import com.example.serveonspot.entities.CustomerPosition;
 import com.example.serveonspot.services.PrivateWaitingList;
 import com.example.serveonspot.services.PublicWaitingList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*")
@@ -26,13 +25,11 @@ public class CustomerController {
         this.publicWaitingList = publicWaitingList;
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_0')")
+    //    @PreAuthorize("hasAnyRole('ROLE_Z')")
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> getAllWaitingCustomers(@RequestParam(required = false) Integer lineLength) {
+    public Flux<List<Customer>> getAllWaitingCustomers(@RequestParam(required = false) Integer lineLength) {
         return Flux.interval(Duration.ofSeconds(5))
-                .map(sequence ->  publicWaitingList.getCustomersInLine(lineLength).stream()
-                                .map(c -> String.format("%03d", Integer.valueOf(c.toString()))).collect(Collectors.joining("; id: ")))
-                        ;
+                .map(sequence -> publicWaitingList.getCustomersInLine(lineLength));
     }
 
     @PostMapping

@@ -2,7 +2,6 @@ package com.example.serveonspot.services;
 
 import com.example.serveonspot.entities.AppUser;
 import com.example.serveonspot.repositories.AppUserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,10 +12,10 @@ import java.util.Optional;
 
 @Service
 public class AppUserService implements UserDetailsService {
-    private AppUserRepository appUserRepository;
+    private final AppUserRepository appUserRepository;
 
-    public AppUserService(AppUserRepository appUserRepository){
-        this.appUserRepository=appUserRepository;
+    public AppUserService(AppUserRepository appUserRepository) {
+        this.appUserRepository = appUserRepository;
     }
 
     @Override
@@ -24,7 +23,7 @@ public class AppUserService implements UserDetailsService {
 
         Optional<AppUser> user = appUserRepository.findByAppUsername(username);
         if (user.isPresent()) {
-            AppUser u= user.get();
+            AppUser u = user.get();
 
             return User.withUsername(u.getUsername())
                     .password(u.getPassword())

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  getSpecialistsHi,
   initializeSpecialistsSource,
   initializeCustomersSource,
 } from "./functions/apiFunctions";
@@ -12,37 +11,26 @@ export function UI({}: Props) {
     { customerId: number }[] | undefined
   >(undefined);
 
-  const [customers2, setCustomers2] = useState<string | undefined>(undefined);
-
   const [specialists, setSpecialists] = useState<
     { specialistId: number }[] | undefined
   >(undefined);
 
-  console.log(customers);
-
   useEffect(() => {
     initializeSpecialistsSource(setSpecialists);
-    initializeCustomersSource(setCustomers2);
+    initializeCustomersSource(setCustomers);
   }, []);
 
   return (
     <div>
-      {/* {!customers ? (
+      {!customers ? (
         "loading customers"
       ) : (
         <>
           <div>waiting customers:</div>
-          {customers.map((i: any, index: number) => (
-            <p key={index}>{i.customerId}</p>
-          ))}
-        </>
-      )} */}
-
-      {!customers2 ? (
-        "loading customers2"
-      ) : (
-        <>
-          <div>waiting customers: {customers2}</div>
+          {customers.length &&
+            customers.map((i: any, index: number) => (
+              <p key={index}>{i.customerId}</p>
+            ))}
         </>
       )}
 
@@ -52,11 +40,11 @@ export function UI({}: Props) {
         ) : (
           <>
             <div>available specialists:</div>
-            {/* {specialists} */}
-            {specialists &&
-              specialists.map((u, index) => (
-                <p key={index}>{u.specialistId}</p>
-              ))}
+            {specialists && specialists.length
+              ? specialists.map((u, index) => (
+                  <p key={index}>{u.specialistId}</p>
+                ))
+              : specialists.length}
           </>
         )}
       </div>

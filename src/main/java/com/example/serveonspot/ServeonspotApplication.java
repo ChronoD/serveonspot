@@ -27,14 +27,10 @@ public class ServeonspotApplication {
     public CommandLineRunner demo(SpecialistRepository specialistRepository, AppUserRepository appUserRepository, BCryptPasswordEncoder encoder   ) {
         return (args) -> {
 
-            appUserRepository.save(new AppUser(Long.valueOf(0),"0", encoder.encode("0"), "0"));
-            appUserRepository.save(new AppUser(Long.valueOf(1),"10", encoder.encode("10"), "A"));
-            appUserRepository.save(new AppUser(Long.valueOf(2),"25", encoder.encode("25"), "B"));
-            appUserRepository.save(new AppUser(Long.valueOf(3),"45", encoder.encode("45"), "C"));
-
-            specialistRepository.save(new Specialist(Long.valueOf(0)));
-            specialistRepository.save(new Specialist(Long.valueOf(1)));
-            specialistRepository.save(new Specialist(Long.valueOf(2)));
+            appUserRepository.save(new AppUser(Long.valueOf(0),"z", encoder.encode("z"), "Z"));
+            appUserRepository.save(new AppUser(Long.valueOf(1),"1", encoder.encode("1"), "A"));
+            appUserRepository.save(new AppUser(Long.valueOf(2),"5", encoder.encode("5"), "A"));
+            appUserRepository.save(new AppUser(Long.valueOf(3),"9", encoder.encode("9"), "A"));
         };
     }
 }

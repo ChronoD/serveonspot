@@ -36,6 +36,7 @@ export function initializeCustomersSource(setCustomers: any) {
     }
   };
   customersSource.onmessage = (message) => {
-    setCustomers(message.data);
+    const data = JSON.parse(message.data);
+    setCustomers(data);
   };
 }
