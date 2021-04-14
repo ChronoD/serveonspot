@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### general ###
+serveOnSpotDB.db.lock.db
+serveOnSpotDB.db.mv.db
