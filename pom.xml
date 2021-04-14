@@ -14,7 +14,7 @@
 	<name>serveonspot</name>
 	<description>Serve On Spot App</description>
 	<properties>
-		<java.version>11</java.version>
+<!--		<java.version>11</java.version>-->
 	</properties>
 	<dependencies>
 		<dependency>
