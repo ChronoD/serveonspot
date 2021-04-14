@@ -32,7 +32,9 @@ public class ServeonspotApplication {
             appUserRepository.save(new AppUser(Long.valueOf(2),"25", encoder.encode("25"), "B"));
             appUserRepository.save(new AppUser(Long.valueOf(3),"45", encoder.encode("45"), "C"));
 
-
+            specialistRepository.save(new Specialist(Long.valueOf(0)));
+            specialistRepository.save(new Specialist(Long.valueOf(1)));
+            specialistRepository.save(new Specialist(Long.valueOf(2)));
         };
     }
 }

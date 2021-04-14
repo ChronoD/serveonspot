@@ -1,6 +1,6 @@
 #FileLock
-#Tue Apr 13 23:21:48 EEST 2021
-server=192.168.1.172\:53492
+#Wed Apr 14 19:15:49 EEST 2021
+server=192.168.1.172\:63729
 hostName=LAPTOP-CBV1B0PE.lan
 method=file
-id=178cce5a7d8c931ce25ca477510eb6761d2d184891f
+id=178d12ad0ffb335c0c79f48cedcd85b26c2b59e39b6

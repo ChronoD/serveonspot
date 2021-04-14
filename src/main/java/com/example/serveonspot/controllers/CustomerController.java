@@ -4,6 +4,7 @@ import com.example.serveonspot.entities.CustomerPosition;
 import com.example.serveonspot.services.PrivateWaitingList;
 import com.example.serveonspot.services.PublicWaitingList;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +15,7 @@ import java.time.Duration;
 import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin(allowedHeaders = "*")
 @RequestMapping(value = "/customers")
 public class CustomerController {
 
@@ -25,15 +27,12 @@ public class CustomerController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_0')")
-    @GetMapping
-    public Flux<ServerSentEvent<String>> getAllWaitingCustomers(@RequestParam(required = false) Integer lineLength) {
+    @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> getAllWaitingCustomers(@RequestParam(required = false) Integer lineLength) {
         return Flux.interval(Duration.ofSeconds(5))
-                .map(sequence -> ServerSentEvent.<String>builder()
-                        .id(String.valueOf(sequence))
-                        .event("periodic-event")
-                        .data("Total customers in line: - " + publicWaitingList.getCustomersInLine(lineLength).stream()
+                .map(sequence ->  publicWaitingList.getCustomersInLine(lineLength).stream()
                                 .map(c -> String.format("%03d", Integer.valueOf(c.toString()))).collect(Collectors.joining("; id: ")))
-                        .build());
+                        ;
     }
 
     @PostMapping
