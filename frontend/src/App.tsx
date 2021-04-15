@@ -1,12 +1,17 @@
-import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
-import { UI } from "./UI";
+import { UI } from "./components/UI";
+import { ErrorBoundary } from "react-error-boundary";
+import { Provider } from "react-redux";
+import { store } from "./state/store";
 
 function App() {
   return (
     <div className="App">
-      <UI />
+      <ErrorBoundary FallbackComponent={() => <p>whoops</p>}>
+        {/* <Provider store={store}> */}
+        <UI />
+        {/* </Provider> */}
+      </ErrorBoundary>
     </div>
   );
 }

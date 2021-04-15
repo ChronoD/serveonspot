@@ -24,7 +24,7 @@ public class UserController {
         this.appUserService = appUserService;
     }
 
-    //
+
 //    @PostMapping("/login")
 //    public String logIn() {
 //        Authentication auth = SecurityContextHolder.getContext().getAuthentication();

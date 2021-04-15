@@ -18,7 +18,6 @@ public class AppUser implements UserDetails {
 
     @Id
     private Long appUserId;
-    @Column(name = "APP_USERNAME")
     private String appUsername;
     private String appUserPassword;
     private String role;

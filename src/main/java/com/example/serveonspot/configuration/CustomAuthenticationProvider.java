@@ -1,6 +1,5 @@
 package com.example.serveonspot.configuration;
 
-import com.example.serveonspot.entities.AppUser;
 import com.example.serveonspot.services.SpecialistService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -39,7 +38,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         UserDetails userDetails = userDetailsService.loadUserByUsername(name);
         boolean passwordMatches = passwordEncoder().matches(password, userDetails.getPassword());
 
-        specialistService.logIn( Integer.valueOf(userDetails.getUsername()));
+        specialistService.logIn(userDetails.getUsername());
 
         return new UsernamePasswordAuthenticationToken(
                 name, password, new ArrayList<>());

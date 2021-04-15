@@ -21,11 +21,10 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
 //                .antMatchers(HttpMethod.POST, "/customers").permitAll()
 //                .antMatchers("/customers/**").permitAll()
 //                .antMatchers("/console/**").permitAll()
-//                .antMatchers("/register").authenticated()
+                .antMatchers("/register").authenticated()
 //                .anyRequest().authenticated()
                 .antMatchers("/").permitAll()
-                .antMatchers("/api/").permitAll()
-                .antMatchers("/api/**").permitAll()
+                .antMatchers("/**").permitAll()
                 .and()
                 .httpBasic()
                 .and()
@@ -47,6 +46,5 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authProvider);
     }
-
 
 }

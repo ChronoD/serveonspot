@@ -3,9 +3,7 @@ package com.example.serveonspot.entities;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,27 +13,18 @@ import java.util.List;
 public class Specialist {
 
     @Id
-    private Long specialistId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int specialistId;
+    private String specialistType;
+
     private boolean isWorking;
 
 //    @OneToMany
 //    private List<Customer> customers=new ArrayList<>();
 
-    public Specialist(Long specialistId) {
-        this.specialistId = specialistId;
+    public Specialist( String specialistType) {
+        this.specialistType = specialistType;
         this.isWorking = true;
     }
 
-    private void startServing(Customer customer) {
-        customer.startServing();
-    }
-
-    private void endServing(Customer customer) {
-        customer.endServing(this);
-//        customers.add(customer);
-    }
-
-    private void cancelServing(Customer customer) {
-        customer.cancelServing();
-    }
 }
