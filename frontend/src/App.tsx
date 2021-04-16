@@ -8,9 +8,9 @@ function App() {
   return (
     <div className="App">
       <ErrorBoundary FallbackComponent={() => <p>whoops</p>}>
-        {/* <Provider store={store}> */}
-        <MainPanel />
-        {/* </Provider> */}
+        <Provider store={store}>
+          <MainPanel />
+        </Provider>
       </ErrorBoundary>
     </div>
   );

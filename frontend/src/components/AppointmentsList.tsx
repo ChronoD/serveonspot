@@ -27,14 +27,16 @@ export function AppointmentsList({}: Props) {
   return (
     <div>
       {!appointments ? (
-        "loading appointments"
+        "Laukiama duomenų"
       ) : (
         <>
-          <div>Ongoing appointments:</div>
+          <div>Vizitai:</div>
           {appointments.length &&
             appointments.map((a: Appointment) => (
               <div key={a.appointmentId}>
-                <p key={a.appointmentId}>{a.appointmentId}</p>
+                <p key={a.appointmentId}>{`${a.appointmentId} ${
+                  a.started ? "vyksta" : "laukia"
+                } `}</p>
               </div>
             ))}
         </>

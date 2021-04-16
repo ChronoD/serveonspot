@@ -23,3 +23,8 @@ export interface AppointmentInfo {
   positionOnTheList: number;
   message: string;
 }
+
+export interface LoginDetails {
+  username: string;
+  password: string;
+}

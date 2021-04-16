@@ -1,11 +1,13 @@
 import { Button } from "antd";
+import { useDispatch } from "react-redux";
+import { unsetAuthenticationHeader } from "../state/appSlice";
 interface Props {}
 
 export function LogOutButton({}: Props) {
+  const dispatch = useDispatch();
   function logOut(): void {
-    sessionStorage.removeItem("Username");
-    // sessionStorage.removeItem(USER_NAME_SESSION_ATTRIBUTE_NAME);
+    dispatch(unsetAuthenticationHeader());
   }
 
-  return <Button onClick={logOut}>logOut</Button>;
+  return <Button onClick={logOut}>Atsijungti</Button>;
 }

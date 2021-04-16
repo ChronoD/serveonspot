@@ -1,5 +1,6 @@
 import axios from "axios";
 import { LoginDetails } from "../containers/StaffPanel";
+import { setAuthenticationHeader } from "../state/appSlice";
 import { Appointment, AppointmentInfo, Specialist } from "../state/dataTypes";
 
 export function registerAppointment(
@@ -48,18 +49,21 @@ export function unregisterAppointment(
 
 export function authenticateStaffMember(
   loginDetais: LoginDetails,
-  setSpecialist: (s: Specialist) => void
+  setAuthHeader: (header: string, authority: string) => void
 ) {
+  const authToken = createBasicAuthToken(loginDetais);
   return axios
     .get(`http://localhost:8080/authorities`, {
       headers: {
         "Access-Control-Allow-Origin": "*",
-        authorization: createBasicAuthToken(loginDetais),
+        authorization: authToken,
       },
     })
     .then((res) => {
       const data = res.data;
       console.log(data);
+
+      setAuthHeader(authToken, data[0].authority);
     })
     .catch((error) => {
       console.log(error);
@@ -100,8 +104,6 @@ export function initializeAppointmentsSource(
     }
   };
   appointmentsSource.onmessage = (message) => {
-    // console.log(message);
-
     const data = JSON.parse(message.data);
     setCustomers(data);
   };

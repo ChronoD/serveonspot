@@ -8,11 +8,15 @@ import com.example.serveonspot.services.AppointmentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 import javax.validation.Valid;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -39,7 +43,10 @@ public class AppointmentController {
     }
 
     @GetMapping(value = "/{appoitmentId}")
-    public Flux<CustomerPositionOutput> trackAppointment(@PathVariable(value = "appoitmentId") Integer appointmentId) {
+    public Flux<CustomerPositionOutput> trackAppointment(Authentication authentication, @PathVariable(value = "appoitmentId") Integer appointmentId) {
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        boolean authorized = authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+
         return Flux.interval(Duration.ofSeconds(1))
                 .map(sequence -> appointmentService.trackAnAppointment(appointmentId));
     }
