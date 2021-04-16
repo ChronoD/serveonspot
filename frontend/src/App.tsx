@@ -1,5 +1,5 @@
 import "./App.css";
-import { UI } from "./components/UI";
+import { MainPanel } from "./containers/MainPanel";
 import { ErrorBoundary } from "react-error-boundary";
 import { Provider } from "react-redux";
 import { store } from "./state/store";
@@ -9,7 +9,7 @@ function App() {
     <div className="App">
       <ErrorBoundary FallbackComponent={() => <p>whoops</p>}>
         {/* <Provider store={store}> */}
-        <UI />
+        <MainPanel />
         {/* </Provider> */}
       </ErrorBoundary>
     </div>

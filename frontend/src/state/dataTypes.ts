@@ -13,5 +13,13 @@ export interface Appointment {
 export interface Specialist {
   specialistId: number;
   specialistType: string;
+  specialistInfo: string;
   working: boolean;
+}
+
+export interface AppointmentInfo {
+  appointmentId: number;
+  specialist: Specialist;
+  positionOnTheList: number;
+  message: string;
 }

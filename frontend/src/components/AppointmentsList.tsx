@@ -8,7 +8,7 @@ import { Appointment } from "../state/dataTypes";
 
 interface Props {}
 
-export function Appointments({}: Props) {
+export function AppointmentsList({}: Props) {
   const [appointments, setAppointments] = useState<Appointment[] | undefined>(
     undefined
   );
@@ -20,7 +20,8 @@ export function Appointments({}: Props) {
   console.log(appointments);
 
   useEffect(() => {
-    initializeAppointmentsSource(updateAppointments);
+    const source = initializeAppointmentsSource(updateAppointments);
+    return () => source.close();
   }, []);
 
   return (
@@ -33,15 +34,7 @@ export function Appointments({}: Props) {
           {appointments.length &&
             appointments.map((a: Appointment) => (
               <div key={a.appointmentId}>
-                <p key={a.appointmentId}>
-                  {a.appointmentId}
-                  <Button
-                    key={a.appointmentId}
-                    onClick={() => unregisterAppointment(a.appointmentId)}
-                  >
-                    unregister
-                  </Button>
-                </p>
+                <p key={a.appointmentId}>{a.appointmentId}</p>
               </div>
             ))}
         </>

@@ -8,6 +8,4 @@ import java.util.List;
 
 @Repository
 public interface SpecialistRepository extends JpaRepository<Specialist, Integer> {
-    List<Specialist> findByIsWorkingTrue();
-
 }

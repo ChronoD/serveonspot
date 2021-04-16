@@ -32,7 +32,6 @@ public class Appointment {
     @OneToOne
     private Specialist specialist;
 
-
     public Appointment(Specialist specialist) {
         this.specialist = specialist;
         this.registeredAt = LocalDateTime.now();

@@ -1,6 +1,6 @@
 package com.example.serveonspot.services;
 
-import com.example.serveonspot.dtos.CustomerPosition;
+import com.example.serveonspot.dtos.CustomerPositionOutput;
 import com.example.serveonspot.entities.Appointment;
 import com.example.serveonspot.entities.Specialist;
 import com.example.serveonspot.repositories.AppointmentRepository;
@@ -39,29 +39,29 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public List<Specialist> getWorkingSpecialists() {
-        return specialistRepository.findByIsWorkingTrue();
+        return specialistRepository.findAll();
     }
 
     @Override
-    public CustomerPosition registerAnAppointment(Integer specialistId) {
+    public CustomerPositionOutput registerAnAppointment(Integer specialistId) {
         Specialist specialist = getWorkingSpecialistById(specialistId);
-        Appointment appointment = new Appointment(specialist);
-        appointmentRepository.save(appointment);
+        Appointment appointment = appointmentRepository.save(new Appointment(specialist));
         List<Appointment> allAppointments = getOngoingAppointments();
-        return new CustomerPosition(appointment, allAppointments);
+
+        return new CustomerPositionOutput(appointment, allAppointments);
+    }
+
+    @Override
+    public CustomerPositionOutput trackAnAppointment(Integer appointmentId) {
+        Appointment customersAppointment = getOngoingAppointmentById(appointmentId);
+        List<Appointment> allAppointments = getOngoingAppointments();
+        return new CustomerPositionOutput(customersAppointment, allAppointments);
     }
 
     @Override
     public void unregisterAnAppointment(Integer appointmentId) {
         Appointment appointment = getOngoingAppointmentById(appointmentId);
         appointment.unregister();
-        appointmentRepository.save(appointment);
-    }
-
-    @Override
-    public void cancelAnAppointment(Integer appointmentId) {
-        Appointment appointment = getOngoingAppointmentById(appointmentId);
-        appointment.cancel();
         appointmentRepository.save(appointment);
     }
 
@@ -79,6 +79,13 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointmentRepository.save(appointment);
     }
 
+    @Override
+    public void cancelAnAppointment(Integer appointmentId) {
+        Appointment appointment = getOngoingAppointmentById(appointmentId);
+        appointment.cancel();
+        appointmentRepository.save(appointment);
+    }
+
     private List<Appointment> getOngoingAppointments() {
         return appointmentRepository.findAll().stream()
                 .filter(a -> appointmentIsOngoing(a))
@@ -89,7 +96,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         return !a.isUnregistered() && !a.isFinished();
     }
 
-    private Appointment getOngoingAppointmentById(Integer appointmentId) throws RuntimeException{
+    private Appointment getOngoingAppointmentById(Integer appointmentId) throws RuntimeException {
         Optional<Appointment> appointmentOptional = appointmentRepository.findById(appointmentId);
         if (appointmentOptional.isPresent()) {
             Appointment appointment = appointmentOptional.get();
@@ -103,10 +110,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     private Specialist getWorkingSpecialistById(Integer specialistId) throws RuntimeException {
         Optional<Specialist> specialistOptional = specialistRepository.findById(specialistId);
         if (specialistOptional.isPresent()) {
-            Specialist specialist = specialistOptional.get();
-            if (specialist.isWorking()) {
-                return specialist;
-            }
+            return specialistOptional.get();
         }
         throw new RuntimeException("No such specialist working");
-    }}
+    }
+}

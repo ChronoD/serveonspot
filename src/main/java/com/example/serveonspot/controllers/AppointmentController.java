@@ -1,8 +1,8 @@
 package com.example.serveonspot.controllers;
 
-import com.example.serveonspot.dtos.AppointmentBooking;
-import com.example.serveonspot.dtos.AppointmentStatus;
-import com.example.serveonspot.dtos.CustomerPosition;
+import com.example.serveonspot.dtos.AppointmentBookingInput;
+import com.example.serveonspot.dtos.AppointmentStatusInput;
+import com.example.serveonspot.dtos.CustomerPositionOutput;
 import com.example.serveonspot.entities.Appointment;
 import com.example.serveonspot.services.AppointmentService;
 import org.springframework.http.HttpStatus;
@@ -34,14 +34,15 @@ public class AppointmentController {
     }
 
     @PostMapping
-    public CustomerPosition registerAppointment(@RequestBody @Valid AppointmentBooking booking) {
+    public CustomerPositionOutput registerAppointment(@RequestBody @Valid AppointmentBookingInput booking) {
         return appointmentService.registerAnAppointment(booking.getSpecialistId());
     }
 
-    //    @GetMapping(value = "/{customerId}")
-//    public CustomerPosition getPositionOnTheWaitingList(@PathVariable(value = "appoitmentId") Integer appointmentId) {
-//        return appointmentService.getPositionOnTheWaitingList(appointmentId);
-//    }
+    @GetMapping(value = "/{appoitmentId}")
+    public Flux<CustomerPositionOutput> trackAppointment(@PathVariable(value = "appoitmentId") Integer appointmentId) {
+        return Flux.interval(Duration.ofSeconds(1))
+                .map(sequence -> appointmentService.trackAnAppointment(appointmentId));
+    }
 
     @DeleteMapping(value = "/{appoitmentId}")
     public ResponseEntity unregisterAppointment(@PathVariable(value = "appoitmentId") Integer appointmentId) {
@@ -52,7 +53,7 @@ public class AppointmentController {
 
     //    @PreAuthorize("hasAnyRole('ROLE_A')")
     @PatchMapping(value = "/{appointmentId}")
-    public ResponseEntity<Appointment> startServingCustomer(@PathVariable(value = "appointmentId") int appointmentId, @RequestBody @Valid AppointmentStatus status) {
+    public ResponseEntity<Appointment> startServingCustomer(@PathVariable(value = "appointmentId") int appointmentId, @RequestBody @Valid AppointmentStatusInput status) {
         String updateOperation = status.getStatus();
 
         switch (updateOperation) {
@@ -78,41 +79,4 @@ public class AppointmentController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-    //    @PreAuthorize("hasAnyRole('ROLE_Z')")
-//    @GetMapping(value="{lineLength}",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-//    public Flux<List<Customer>> getAllWaitingCustomers(@RequestParam(required = false) Integer lineLength) {
-//        return Flux.interval(Duration.ofSeconds(5))
-//                .map(sequence -> publicWaitingList.getCustomersInLine(lineLength));
-//    }
-
-    //    @GetMapping(value = "/{customerId}")
-//    public CustomerPosition getPositionOnTheWaitingList(@PathVariable(value = "customerId") int customerId) {
-//        return publicWaitingList.getPositionOnTheWaitingList(customerId);
-//    }
-
-
-//    @PreAuthorize(value = "ROLE_A")
-//    @GetMapping(value = "/{specialistId}")
-//    public ResponseEntity<List<Customer>> getWaitingCustomers(@PathVariable(value = "specialistId") int specialistId) {
-//        List<Customer> customers = specialistService.getWaitingList(specialistId);
-//        return new ResponseEntity<>(customers, HttpStatus.OK);
-//    }
-//
-//
-
-//
-//    //    @PreAuthorize("hasAnyRole('ROLE_A')")
-//    @PutMapping(value = "/{specialistId}/customers/{customerId}/cancel")
-//    public ResponseEntity<Customer> cancelServingCustomer(@PathVariable(value = "specialistId") int specialistId, @PathVariable(value = "specialistId") int customerId) {
-//        Customer customer = specialistService.cancelServingCustomer(specialistId, customerId);
-//        return new ResponseEntity<>(customer, HttpStatus.OK);
-//    }
-//
-//    //    @PreAuthorize("hasAnyRole('ROLE_A')")
-//    @PutMapping(value = "/{customerId}/specialist/{specialistId}")
-//    public ResponseEntity<Customer> endServingCustomer(@PathVariable(value = "specialistId") int specialistId, @PathVariable(value = "specialistId") int customerId) {
-//        Customer customer = specialistService.endServingCustomer(specialistId, customerId);
-//        return new ResponseEntity<>(customer, HttpStatus.OK);
-//    }
 }

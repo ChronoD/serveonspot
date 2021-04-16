@@ -5,7 +5,8 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class AppointmentBooking {
+public class AppointmentBookingInput {
+
     @NotNull
     private Integer specialistId;
 }
