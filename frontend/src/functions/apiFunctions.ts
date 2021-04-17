@@ -1,11 +1,11 @@
 import axios from "axios";
 import { LoginDetails } from "../containers/StaffPanel";
-import { setAuthenticationHeader } from "../state/appSlice";
 import { Appointment, AppointmentInfo, Specialist } from "../state/dataTypes";
 
 export function registerAppointment(
   specialistId: number,
-  setAppointment: (appointment: Appointment) => void
+  onSuccess: (appointmentInfo: AppointmentInfo) => void,
+  onError: (error: Error) => void
 ) {
   return axios
     .post(
@@ -16,19 +16,41 @@ export function registerAppointment(
       }
     )
     .then((res) => {
-      console.log(res);
+      // console.log(res);
       const data = res.data;
-      console.log(data);
-      setAppointment(data);
+      onSuccess(data);
     })
     .catch((error) => {
-      console.log(error);
+      // console.log(error);
+      onError(error);
     });
+}
+
+export function initializeTrackedAppointmentSource(
+  appointmentId: number,
+  onSuccess: (appointmentInfo: AppointmentInfo) => void
+): EventSource {
+  const appointmentsSource = new EventSource(
+    `http://127.0.0.1:8080/appointments/${appointmentId}`
+  );
+  appointmentsSource.onerror = () => {
+    if (appointmentsSource.readyState === 2) {
+      setTimeout(initializeTrackedAppointmentSource, 300);
+    }
+  };
+  appointmentsSource.onmessage = (message) => {
+    console.log("appointment", message);
+
+    const data = JSON.parse(message.data);
+    onSuccess(data);
+  };
+  return appointmentsSource;
 }
 
 export function unregisterAppointment(
   appointmentId: number,
-  removeAppointment: () => void
+  onSuccess: () => void,
+  onError: (error: Error) => void
 ) {
   return axios
     .patch(
@@ -39,11 +61,10 @@ export function unregisterAppointment(
       }
     )
     .then((res) => {
-      const data = res.data;
-      removeAppointment();
+      onSuccess();
     })
     .catch((error) => {
-      console.log(error);
+      onError(error);
     });
 }
 
@@ -64,32 +85,11 @@ export function authenticateStaffMember(
       console.log(data);
 
       setAuthHeader(authToken, data[0].authority);
+      setupAxiosInterceptors(authToken);
     })
     .catch((error) => {
       console.log(error);
     });
-}
-
-export function initializeTrackedAppointmentSource(
-  appointmentId: number,
-  setAppointmentInfo: (appointmentInfo: AppointmentInfo) => void
-): EventSource {
-  const appointmentsSource = new EventSource(
-    `http://127.0.0.1:8080/appointments/${appointmentId}`
-  );
-
-  appointmentsSource.onerror = () => {
-    if (appointmentsSource.readyState === 2) {
-      setTimeout(initializeSpecialistsSource, 300);
-    }
-  };
-  appointmentsSource.onmessage = (message) => {
-    console.log(message);
-
-    const data = JSON.parse(message.data);
-    setAppointmentInfo(data);
-  };
-  return appointmentsSource;
 }
 
 export function initializeAppointmentsSource(
@@ -100,7 +100,7 @@ export function initializeAppointmentsSource(
   );
   appointmentsSource.onerror = () => {
     if (appointmentsSource.readyState === 2) {
-      setTimeout(initializeSpecialistsSource, 300);
+      setTimeout(initializeAppointmentsSource, 300);
     }
   };
   appointmentsSource.onmessage = (message) => {
@@ -111,12 +111,14 @@ export function initializeAppointmentsSource(
 }
 
 export function initializeSpecialistsSource(
-  setSpecialists: (specialists: Specialist[]) => void
+  onSuccess: (specialists: Specialist[]) => void,
+  onError: (error: Error) => void
 ): EventSource {
   const specialistsSource = new EventSource(
     "http://127.0.0.1:8080/specialists"
   );
   specialistsSource.onerror = () => {
+    onError(new Error("Nepavyko gauti specialistų"));
     if (specialistsSource.readyState === 2) {
       setTimeout(initializeSpecialistsSource, 300);
     }
@@ -124,7 +126,7 @@ export function initializeSpecialistsSource(
   specialistsSource.onmessage = (message) => {
     // console.log(message);
     const data = JSON.parse(message.data);
-    setSpecialists(data);
+    onSuccess(data);
   };
   return specialistsSource;
 }
@@ -133,4 +135,24 @@ function createBasicAuthToken(loginDetails: LoginDetails) {
   const { username, password } = loginDetails;
   const unencodedDetails = username + ":" + password;
   return "Basic " + Buffer.from(unencodedDetails).toString("base64");
+}
+
+function setupAxiosInterceptors(header: string) {
+  // const { userAuthority, authenticationHeader } = appState;
+  axios.interceptors.request.use((request) => {
+    // if (userAuthority && authenticationHeader) {
+    request.headers.authorization = header;
+    // }
+    return request;
+  });
+}
+
+export function cancelAxiosInterceptors() {
+  // const { userAuthority, authenticationHeader } = appState;
+  axios.interceptors.request.use((request) => {
+    // if (userAuthority && authenticationHeader) {
+    request.headers.authorization = null;
+    // }
+    return request;
+  });
 }

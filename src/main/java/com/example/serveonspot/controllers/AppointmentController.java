@@ -32,7 +32,10 @@ public class AppointmentController {
 
     //    @PreAuthorize("hasAnyRole('ROLE_Z')")
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<List<Appointment>> trackOngoingAppointments(@RequestParam(required = false) Integer lineLength) {
+    public Flux<List<Appointment>> trackOngoingAppointments(     Authentication authentication, @RequestParam(required = false) Integer lineLength) {
+
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        boolean authorized = authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
         return Flux.interval(Duration.ofSeconds(5))
                 .map(sequence -> appointmentService.getOngoingAppointments(lineLength));
     }
@@ -43,18 +46,10 @@ public class AppointmentController {
     }
 
     @GetMapping(value = "/{appoitmentId}")
-    public Flux<CustomerPositionOutput> trackAppointment(Authentication authentication, @PathVariable(value = "appoitmentId") Integer appointmentId) {
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        boolean authorized = authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+    public Flux<CustomerPositionOutput> trackAppointment(@PathVariable(value = "appoitmentId") Integer appointmentId) {
 
         return Flux.interval(Duration.ofSeconds(1))
                 .map(sequence -> appointmentService.trackAnAppointment(appointmentId));
-    }
-
-    @DeleteMapping(value = "/{appoitmentId}")
-    public ResponseEntity unregisterAppointment(@PathVariable(value = "appoitmentId") Integer appointmentId) {
-        appointmentService.unregisterAnAppointment(appointmentId);
-        return new ResponseEntity(HttpStatus.OK);
     }
 
 

@@ -1,22 +1,136 @@
-import { useState } from "react";
-import { Appointment } from "../state/dataTypes";
-import { AppointmentInformation } from "../components/AppointmentInformation";
-import { SpecialistsList } from "../components/SpecialistsList";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../state/hooks";
+import {
+  specialistsSuccess,
+  specialistsError,
+  postingAppointmentError,
+  postingAppointmentSuccess,
+  unregisteringSuccess,
+  unregisteringError,
+} from "../state/customerSlice";
+import {
+  initializeSpecialistsSource,
+  initializeTrackedAppointmentSource,
+  registerAppointment,
+  unregisterAppointment,
+} from "../functions/apiFunctions";
+import { AppointmentInfo, Specialist } from "../state/dataTypes";
+import { CustomerAppointmentInformation } from "../components/CustomerAppointmentInformation";
+import { CustomerSpecialists } from "../components/CustomerSpecialists";
 
 interface Props {}
 
 export function CustomerPanel({}: Props) {
-  const [appointment, setAppointment] = useState<Appointment | undefined>(
-    undefined
-  );
+  const {
+    gettingSpecialists,
+    gettingSpecialistsError,
+    specialists,
+    postingAppointment,
+    appointmentError,
+    appointmentInfo,
+    unregisteringAppointment,
+    unregisteringAppointmentError,
+  } = useAppSelector((state) => state.customer);
+
+  const dispatch = useDispatch();
+
+  function registerWithSpecialist(specialistId: number) {
+    registerAppointment(
+      specialistId,
+      (appointmentInfo: AppointmentInfo) =>
+        dispatch(postingAppointmentSuccess(appointmentInfo)),
+      (error: Error) => dispatch(postingAppointmentError(error))
+    );
+  }
+
+  function trackAppointmentSuccess(appointmentInfo: AppointmentInfo) {
+    dispatch(postingAppointmentSuccess(appointmentInfo));
+    closeSpecs();
+  }
+
+  let specialistsSource: EventSource | null = null;
+
+  function closeSpecs() {
+    console.log("closing specialists");
+    specialistsSource && specialistsSource.close();
+  }
+
+  function closeAppointment() {
+    console.log("closing appointments");
+
+    appointmentSource && appointmentSource.close();
+  }
+
+  useEffect(() => {
+    if (!appointmentInfo) {
+      specialistsSource = initializeSpecialistsSource(
+        (specialists: Specialist[]) =>
+          dispatch(specialistsSuccess(specialists)),
+        (error: Error) => dispatch(specialistsError(error))
+      );
+      specialistsSource.addEventListener("close", () =>
+        specialistsSource?.close()
+      );
+    } else {
+      closeSpecs();
+    }
+    return () => {
+      closeSpecs();
+    };
+  }, [appointmentInfo]);
+
+  function unregister(appointmentId: number) {
+    // dispatch(unregisteringAppointment);
+    unregisterAppointment(
+      appointmentId,
+      () => dispatch(unregisteringSuccess()),
+      (error: Error) => dispatch(unregisteringError(error))
+    );
+  }
+
+  let appointmentSource: EventSource | null = null;
+
+  useEffect(() => {
+    if (appointmentInfo) {
+      appointmentSource = initializeTrackedAppointmentSource(
+        appointmentInfo.appointmentId,
+        trackAppointmentSuccess
+      );
+
+      return () => {
+        closeAppointment();
+      };
+    }
+  }, [appointmentInfo]);
+
+  useEffect(() => {
+    return () => {
+      closeAppointment();
+      closeSpecs();
+    };
+  }, [appointmentInfo]);
 
   return (
     <div>
-      {!appointment && <SpecialistsList setAppointment={setAppointment} />}
-      {appointment && (
-        <AppointmentInformation
-          appointment={appointment}
-          removeAppointment={() => setAppointment(undefined)}
+      {specialists && !appointmentInfo && (
+        <CustomerSpecialists
+          registerAppointment={registerWithSpecialist}
+          registering={postingAppointment}
+          registeringError={appointmentError}
+          loadingSpecialists={gettingSpecialists}
+          loadingSpecialistsError={gettingSpecialistsError}
+          specialists={specialists}
+        />
+      )}
+      {appointmentInfo && (
+        <CustomerAppointmentInformation
+          appointmentInfo={appointmentInfo}
+          unregisterAppointment={() =>
+            unregister(appointmentInfo.appointmentId)
+          }
+          unregistering={unregisteringAppointment}
+          unregisteringError={unregisteringAppointmentError}
         />
       )}
     </div>

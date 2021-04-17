@@ -8,7 +8,7 @@ import { Appointment } from "../state/dataTypes";
 
 interface Props {}
 
-export function AppointmentsList({}: Props) {
+export function StaffAppointments({}: Props) {
   const [appointments, setAppointments] = useState<Appointment[] | undefined>(
     undefined
   );
@@ -21,7 +21,11 @@ export function AppointmentsList({}: Props) {
 
   useEffect(() => {
     const source = initializeAppointmentsSource(updateAppointments);
-    return () => source.close();
+    return () => {
+      console.log("closing appmt");
+
+      source.close();
+    };
   }, []);
 
   return (

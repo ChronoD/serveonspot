@@ -1,5 +1,5 @@
 import { Button, Form, Input } from "antd";
-import { LoginDetails } from "./StaffPanel";
+import { LoginDetails } from "../containers/StaffPanel";
 
 interface Props {
   onSubmit: (values: LoginDetails) => void;
@@ -13,7 +13,7 @@ const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 };
 
-export function StaffPanelLogin({ onSubmit }: Props) {
+export function StaffPanelLogIn({ onSubmit }: Props) {
   return (
     <Form
       {...layout}

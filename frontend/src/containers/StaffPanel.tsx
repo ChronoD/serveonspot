@@ -1,16 +1,12 @@
-import { Button, Form, Input, Checkbox } from "antd";
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AppointmentsList } from "../components/AppointmentsList";
-import { LogOutButton } from "../components/LogOutButton";
-import { SpecialistsList } from "../components/SpecialistsList";
+import { StaffAppointments } from "../components/StaffAppointments";
+import { StaffPanelLogIn } from "../components/StaffPanelLogIn";
+import { StaffPanelLogOut } from "../components/StaffPanelLogOut";
 import { authenticateStaffMember } from "../functions/apiFunctions";
 import {
   selectAuthenticationHeader,
   setAuthenticationHeader,
 } from "../state/appSlice";
-import { Specialist } from "../state/dataTypes";
-import { StaffPanelLogin } from "./StaffPanelLogin";
 
 interface Props {}
 
@@ -31,17 +27,13 @@ export function StaffPanel({}: Props) {
     authenticateStaffMember(values, setHeaderAndAuthority);
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-  };
-
   return (
     <div>
-      {!isAuthenticated && <StaffPanelLogin onSubmit={onSubmit} />}
+      {!isAuthenticated && <StaffPanelLogIn onSubmit={onSubmit} />}
       {isAuthenticated && (
         <>
-          <AppointmentsList />
-          <LogOutButton />
+          <StaffAppointments />
+          <StaffPanelLogOut />
         </>
       )}
     </div>

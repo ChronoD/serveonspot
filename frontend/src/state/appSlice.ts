@@ -1,22 +1,17 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { registerAppointment } from "../functions/apiFunctions";
 import { Appointment } from "./dataTypes";
 import type { RootState } from "./store";
 
 // Define a type for the slice state
-interface AppState {
-  postingAppointment: boolean;
-  appointment: Appointment | undefined;
-  appointmentError: Error | undefined;
+export interface AppState {
+  customerMode: boolean;
   authenticationHeader: string | undefined;
   userAuthority: string | undefined;
 }
 
 // Define the initial state using that type
 const initialState: AppState = {
-  postingAppointment: false,
-  appointment: undefined,
-  appointmentError: undefined,
+  customerMode: true,
   authenticationHeader: undefined,
   userAuthority: undefined,
 };
@@ -34,6 +29,9 @@ export const appSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
+    toggleAppointmentMode: (state) => {
+      state.customerMode = !state.customerMode;
+    },
     postAppointment: (state) => {
       // state.value += 1;
     },
@@ -57,6 +55,7 @@ export const appSlice = createSlice({
 });
 
 export const {
+  toggleAppointmentMode,
   decrement,
   setAuthenticationHeader,
   unsetAuthenticationHeader,
@@ -65,5 +64,8 @@ export const {
 // Other code such as selectors can use the imported `RootState` type
 export const selectAuthenticationHeader = (state: RootState) =>
   state.app.authenticationHeader;
+
+export const selectAppointmentMode = (state: RootState) =>
+  state.app.customerMode;
 
 export default appSlice.reducer;
