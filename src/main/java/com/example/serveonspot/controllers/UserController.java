@@ -14,11 +14,11 @@ import java.security.Principal;
 @RestController
 @RequestMapping
 @CrossOrigin(allowedHeaders = "*")
-public class AuthorityController {
+public class UserController {
 
     private final AppUserService appUserService;
 
-    public AuthorityController(AppUserService appUserService) {
+    public UserController(AppUserService appUserService) {
         this.appUserService = appUserService;
     }
 
