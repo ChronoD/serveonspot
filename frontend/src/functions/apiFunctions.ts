@@ -1,6 +1,12 @@
 import axios from "axios";
-import { LoginDetails } from "../containers/StaffPanel";
-import { Appointment, AppointmentInfo, Specialist } from "../state/dataTypes";
+import {
+  Appointment,
+  AppointmentInfo,
+  LoginDetails,
+  Specialist,
+  UserInfo,
+} from "../state/dataTypes";
+import { NativeEventSource, EventSourcePolyfill } from "event-source-polyfill";
 
 export function registerAppointment(
   specialistId: number,
@@ -70,11 +76,11 @@ export function unregisterAppointment(
 
 export function authenticateStaffMember(
   loginDetais: LoginDetails,
-  setAuthHeader: (header: string, authority: string) => void
+  setAuthHeader: (userInfo: UserInfo, header: string) => void
 ) {
   const authToken = createBasicAuthToken(loginDetais);
   return axios
-    .get(`http://localhost:8080/authorities`, {
+    .get(`http://localhost:8080/user`, {
       headers: {
         "Access-Control-Allow-Origin": "*",
         authorization: authToken,
@@ -84,7 +90,7 @@ export function authenticateStaffMember(
       const data = res.data;
       console.log(data);
 
-      setAuthHeader(authToken, data[0].authority);
+      setAuthHeader(data[0], authToken);
       setupAxiosInterceptors(authToken);
     })
     .catch((error) => {
@@ -93,17 +99,24 @@ export function authenticateStaffMember(
 }
 
 export function initializeAppointmentsSource(
-  setCustomers: (appointments: Appointment[]) => void
+  setCustomers: (appointments: Appointment[]) => void,
+  authToken?: string
 ): EventSource {
-  const appointmentsSource = new EventSource(
-    "http://127.0.0.1:8080/appointments"
+  const appointmentsSource = new EventSourcePolyfill(
+    "http://127.0.0.1:8080/appointments",
+    {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        authorization: `${authToken}`,
+      },
+    }
   );
   appointmentsSource.onerror = () => {
     if (appointmentsSource.readyState === 2) {
       setTimeout(initializeAppointmentsSource, 300);
     }
   };
-  appointmentsSource.onmessage = (message) => {
+  appointmentsSource.onmessage = (message: any) => {
     const data = JSON.parse(message.data);
     setCustomers(data);
   };

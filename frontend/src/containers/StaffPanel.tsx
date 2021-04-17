@@ -3,28 +3,24 @@ import { StaffAppointments } from "../components/StaffAppointments";
 import { StaffPanelLogIn } from "../components/StaffPanelLogIn";
 import { StaffPanelLogOut } from "../components/StaffPanelLogOut";
 import { authenticateStaffMember } from "../functions/apiFunctions";
+import { LoginDetails, UserInfo } from "../state/dataTypes";
 import {
   selectAuthenticationHeader,
-  setAuthenticationHeader,
-} from "../state/appSlice";
+  setUserInfoAndAuthenticationHeader,
+} from "../state/staffSlice";
 
 interface Props {}
-
-export interface LoginDetails {
-  username: string;
-  password: string;
-}
 
 export function StaffPanel({}: Props) {
   const isAuthenticated = !!useSelector(selectAuthenticationHeader);
 
   const dispatch = useDispatch();
 
-  const setHeaderAndAuthority = (header: string, authority: string) =>
-    dispatch(setAuthenticationHeader({ header, authority }));
+  const setHeaderAndUserInfo = (userInfo: UserInfo, header: string) =>
+    dispatch(setUserInfoAndAuthenticationHeader({ userInfo, header }));
 
   const onSubmit = (values: LoginDetails) => {
-    authenticateStaffMember(values, setHeaderAndAuthority);
+    authenticateStaffMember(values, setHeaderAndUserInfo);
   };
 
   return (

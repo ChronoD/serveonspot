@@ -1,5 +1,5 @@
 import { Button, Form, Input } from "antd";
-import { LoginDetails } from "../containers/StaffPanel";
+import { LoginDetails } from "../state/dataTypes";
 
 interface Props {
   onSubmit: (values: LoginDetails) => void;

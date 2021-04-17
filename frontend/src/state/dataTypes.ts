@@ -28,3 +28,11 @@ export interface LoginDetails {
   username: string;
   password: string;
 }
+
+export interface UserInfo {
+  userId: string;
+  username: string;
+  password: string;
+  authority: string;
+  specialist: Specialist;
+}

@@ -5,10 +5,13 @@ import {
   unregisterAppointment,
 } from "../functions/apiFunctions";
 import { Appointment } from "../state/dataTypes";
+import { useAppSelector } from "../state/hooks";
 
 interface Props {}
 
 export function StaffAppointments({}: Props) {
+  const { authenticationHeader } = useAppSelector((state) => state.staff);
+
   const [appointments, setAppointments] = useState<Appointment[] | undefined>(
     undefined
   );
@@ -20,7 +23,10 @@ export function StaffAppointments({}: Props) {
   console.log(appointments);
 
   useEffect(() => {
-    const source = initializeAppointmentsSource(updateAppointments);
+    const source = initializeAppointmentsSource(
+      updateAppointments,
+      authenticationHeader
+    );
     return () => {
       console.log("closing appmt");
 

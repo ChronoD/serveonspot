@@ -19,7 +19,6 @@ public class Specialist {
     private String specialistType;
     private String specialistInfo;
 
-
     public Specialist(String specialistType) {
         this.specialistType = specialistType;
         this.specialistInfo = generateSpecialistInfo(specialistType);
