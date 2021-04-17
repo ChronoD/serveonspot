@@ -7,7 +7,7 @@ import { LoginDetails, UserInfo } from "../state/dataTypes";
 import {
   selectAuthenticationHeader,
   setUserInfoAndAuthenticationHeader,
-} from "../state/staffSlice";
+} from "../state/sliceStaff";
 
 interface Props {}
 

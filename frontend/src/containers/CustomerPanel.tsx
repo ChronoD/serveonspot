@@ -8,7 +8,7 @@ import {
   postingAppointmentSuccess,
   unregisteringSuccess,
   unregisteringError,
-} from "../state/customerSlice";
+} from "../state/sliceCustomer";
 import {
   initializeSpecialistsSource,
   initializeTrackedAppointmentSource,

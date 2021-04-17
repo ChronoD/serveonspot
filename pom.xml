@@ -69,11 +69,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-validation_1.1_spec</artifactId>
-			<version>8.0-1</version>
-		</dependency>
 	</dependencies>
 
 	<build>

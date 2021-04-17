@@ -35,9 +35,10 @@ export const staffSlice = createSlice({
       state,
       action: PayloadAction<{ userInfo: UserInfo; header: string }>
     ) => {
+      console.log(action.payload);
       const { userInfo, header } = action.payload;
-      state.authenticationHeader = header;
       state.userInfo = userInfo;
+      state.authenticationHeader = header;
     },
     unsetUserInfoAndAuthenticationHeader: (state, action: PayloadAction) => {
       state.authenticationHeader = undefined;

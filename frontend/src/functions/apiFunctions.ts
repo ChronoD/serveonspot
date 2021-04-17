@@ -90,7 +90,7 @@ export function authenticateStaffMember(
       const data = res.data;
       console.log(data);
 
-      setAuthHeader(data[0], authToken);
+      setAuthHeader(data, authToken);
       setupAxiosInterceptors(authToken);
     })
     .catch((error) => {

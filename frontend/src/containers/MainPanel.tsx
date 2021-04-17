@@ -1,9 +1,6 @@
 import { Button } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectAppointmentMode,
-  toggleAppointmentMode,
-} from "../state/appSlice";
+import { toggleAppointmentMode } from "../state/sliceApp";
 import { useAppSelector } from "../state/hooks";
 import { CustomerPanel } from "./CustomerPanel";
 import { StaffPanel } from "./StaffPanel";
@@ -14,6 +11,7 @@ export function MainPanel({}: Props) {
   const {
     app: { customerMode },
     customer: { appointmentInfo },
+    staff: { userInfo },
   } = useAppSelector((state) => state);
 
   const dispatch = useDispatch();
@@ -22,7 +20,7 @@ export function MainPanel({}: Props) {
   }
   return (
     <div>
-      {!appointmentInfo && (
+      {!appointmentInfo && !userInfo && (
         <Button type="primary" onClick={toggleMode}>
           {customerMode ? "Darbuotojams" : "Grįžti"}
         </Button>
