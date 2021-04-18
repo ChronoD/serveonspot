@@ -13,7 +13,7 @@ const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 };
 
-export function StaffPanelLogIn({ onSubmit }: Props) {
+export function StaffLogIn({ onSubmit }: Props) {
   return (
     <Form
       {...layout}

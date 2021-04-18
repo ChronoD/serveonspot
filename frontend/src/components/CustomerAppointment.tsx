@@ -8,7 +8,7 @@ interface Props {
   unregisteringError: Error | undefined;
 }
 
-export function CustomerAppointmentInformation({
+export function CustomerAppointment({
   appointmentInfo,
   unregisterAppointment,
   unregistering,

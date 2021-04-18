@@ -30,9 +30,9 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
     private final AppUserService appUserService;
 
-    public AppointmentController(AppointmentService appointmentService,AppUserService appUserService) {
+    public AppointmentController(AppointmentService appointmentService, AppUserService appUserService) {
         this.appointmentService = appointmentService;
-        this.appUserService=appUserService;
+        this.appUserService = appUserService;
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SPECIALIST')")

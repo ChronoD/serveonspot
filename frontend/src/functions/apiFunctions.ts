@@ -74,6 +74,28 @@ export function unregisterAppointment(
     });
 }
 
+export function updateAppointmentStatus(
+  appointmentId: number,
+  appointmentStatus: string,
+  onSuccess: (appointment: Appointment) => void,
+  onError: (error: Error) => void
+) {
+  return axios
+    .patch(
+      `http://localhost:8080/appointments/${appointmentId}`,
+      { status: appointmentStatus },
+      {
+        headers: { "Access-Control-Allow-Origin": "*" },
+      }
+    )
+    .then((res) => {
+      onSuccess(res.data);
+    })
+    .catch((error) => {
+      onError(error);
+    });
+}
+
 export function authenticateStaffMember(
   loginDetais: LoginDetails,
   setAuthHeader: (userInfo: UserInfo, header: string) => void

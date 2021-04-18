@@ -16,7 +16,7 @@ import {
   unregisterAppointment,
 } from "../functions/apiFunctions";
 import { AppointmentInfo, Specialist } from "../state/dataTypes";
-import { CustomerAppointmentInformation } from "../components/CustomerAppointmentInformation";
+import { CustomerAppointment } from "../components/CustomerAppointment";
 import { CustomerSpecialists } from "../components/CustomerSpecialists";
 
 interface Props {}
@@ -52,13 +52,10 @@ export function CustomerPanel({}: Props) {
   let specialistsSource: EventSource | null = null;
 
   function closeSpecs() {
-    console.log("closing specialists");
     specialistsSource && specialistsSource.close();
   }
 
   function closeAppointment() {
-    console.log("closing appointments");
-
     appointmentSource && appointmentSource.close();
   }
 
@@ -104,12 +101,12 @@ export function CustomerPanel({}: Props) {
     }
   }, [appointmentInfo]);
 
-  useEffect(() => {
-    return () => {
-      closeAppointment();
-      closeSpecs();
-    };
-  }, [appointmentInfo]);
+  // useEffect(() => {
+  //   return () => {
+  //     closeAppointment();
+  //     closeSpecs();
+  //   };
+  // }, [appointmentInfo]);
 
   return (
     <div>
@@ -124,7 +121,7 @@ export function CustomerPanel({}: Props) {
         />
       )}
       {appointmentInfo && (
-        <CustomerAppointmentInformation
+        <CustomerAppointment
           appointmentInfo={appointmentInfo}
           unregisterAppointment={() =>
             unregister(appointmentInfo.appointmentId)
