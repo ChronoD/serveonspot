@@ -6,7 +6,7 @@ import {
   Specialist,
   UserInfo,
 } from "../state/dataTypes";
-import { NativeEventSource, EventSourcePolyfill } from "event-source-polyfill";
+import { EventSourcePolyfill } from "event-source-polyfill";
 
 export function registerAppointment(
   specialistId: number,
@@ -61,7 +61,7 @@ export function unregisterAppointment(
   return axios
     .patch(
       `http://localhost:8080/appointments/${appointmentId}`,
-      { status: "unregister" },
+      { status: "UNREGISTERED" },
       {
         headers: { "Access-Control-Allow-Origin": "*" },
       }

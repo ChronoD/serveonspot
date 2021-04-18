@@ -37,6 +37,7 @@ export function CustomerSpecialists({
                     >
                       <>{spec.specialistType}</>
                       <Button
+                        type="primary"
                         onClick={() => registerAppointment(spec.specialistId)}
                         loading={registering}
                       >

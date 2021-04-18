@@ -1,14 +1,16 @@
 package com.example.serveonspot.services;
 
+import com.example.serveonspot.configuration.exceptions.AppointmentException;
+import com.example.serveonspot.configuration.exceptions.SpecialistException;
+import com.example.serveonspot.dtos.AppointmentStatus;
 import com.example.serveonspot.dtos.CustomerPositionOutput;
+import com.example.serveonspot.entities.AppUser;
 import com.example.serveonspot.entities.Appointment;
 import com.example.serveonspot.entities.Specialist;
 import com.example.serveonspot.repositories.AppointmentRepository;
 import com.example.serveonspot.repositories.SpecialistRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,8 +19,6 @@ import java.util.stream.Collectors;
 public class AppointmentServiceImpl implements AppointmentService {
     private final SpecialistRepository specialistRepository;
     private final AppointmentRepository appointmentRepository;
-    private final Deque<Appointment> appointmentsDeque = new ArrayDeque<>();
-    private final Deque<Specialist> specialistDeque = new ArrayDeque<>();
 
     public AppointmentServiceImpl(SpecialistRepository specialistRepository, AppointmentRepository appointmentRepository) {
         this.specialistRepository = specialistRepository;
@@ -26,19 +26,21 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<Appointment> getOngoingAppointments(Integer lineLength) {
-        return getOngoingAppointments();
+    public List<Appointment> watchOngoingAppointmentsByUser(AppUser appUser) {
+        String appUserAuthority = appUser.getAuthority();
+        switch (appUserAuthority) {
+            case "ADMIN":
+                return getOngoingAppointmentsStartedFirst(5);
+            case "SPECIALIST":
+                Integer specialistId = appUser.getSpecialist().getSpecialistId();
+                return getOngoingAppointmentsBySpecialist(specialistId);
+            default:
+                throw new RuntimeException("No such authority");
+        }
     }
 
     @Override
-    public List<Appointment> getOngoingAppointmentsBySpecialist(Integer specialistId) {
-        return getOngoingAppointments().stream()
-                .filter(a -> a.getSpecialist().getSpecialistId() == specialistId)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Specialist> getWorkingSpecialists() {
+    public List<Specialist> watchWorkingSpecialists() {
         return specialistRepository.findAll();
     }
 
@@ -46,15 +48,15 @@ public class AppointmentServiceImpl implements AppointmentService {
     public CustomerPositionOutput registerAnAppointment(Integer specialistId) {
         Specialist specialist = getWorkingSpecialistById(specialistId);
         Appointment appointment = appointmentRepository.save(new Appointment(specialist));
-        List<Appointment> allAppointments = getOngoingAppointments();
+        List<Appointment> allAppointments = getOngoingAppointmentsStartedFirst();
 
         return new CustomerPositionOutput(appointment, allAppointments);
     }
 
     @Override
-    public CustomerPositionOutput trackAnAppointment(Integer appointmentId) {
+    public CustomerPositionOutput watchAnAppointment(Integer appointmentId) {
         Appointment customersAppointment = getOngoingAppointmentById(appointmentId);
-        List<Appointment> allAppointments = getOngoingAppointments();
+        List<Appointment> allAppointments = getOngoingAppointmentsStartedFirst();
         return new CustomerPositionOutput(customersAppointment, allAppointments);
     }
 
@@ -86,25 +88,37 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointmentRepository.save(appointment);
     }
 
-    private List<Appointment> getOngoingAppointments() {
-        return appointmentRepository.findAll().stream()
-                .filter(a -> appointmentIsOngoing(a))
+    public List<Appointment> getOngoingAppointmentsStartedFirst(Integer waitingLineLength) {
+        return getOngoingAppointmentsStartedFirst();
+    }
+
+    public List<Appointment> getOngoingAppointmentsBySpecialist(Integer specialistId) {
+        return getOngoingAppointmentsStartedFirst().stream()
+                .filter(a -> a.getSpecialist().getSpecialistId() == specialistId)
                 .collect(Collectors.toList());
     }
 
-    private boolean appointmentIsOngoing(Appointment a) {
-        return !a.isUnregistered() && !a.isFinished();
+    private List<Appointment> getOngoingAppointmentsStartedFirst() {
+        return appointmentRepository.findAll().stream()
+                .filter(a -> isAppointmentOngoing(a))
+                .sorted((a, b)-> (a.getStatus()).compareTo(a.getStatus()))
+                .collect(Collectors.toList());
+    }
+
+    private boolean isAppointmentOngoing(Appointment appt) {
+        return (appt.getStatus().equals(AppointmentStatus.REGISTERED)
+                || appt.getStatus().equals(AppointmentStatus.STARTED));
     }
 
     private Appointment getOngoingAppointmentById(Integer appointmentId) throws RuntimeException {
         Optional<Appointment> appointmentOptional = appointmentRepository.findById(appointmentId);
         if (appointmentOptional.isPresent()) {
             Appointment appointment = appointmentOptional.get();
-            if (appointmentIsOngoing(appointment)) {
+            if (isAppointmentOngoing(appointment)) {
                 return appointment;
             }
         }
-        throw new RuntimeException("No such ongoing appointment");
+        throw new AppointmentException("No such ongoing appointment");
     }
 
     private Specialist getWorkingSpecialistById(Integer specialistId) throws RuntimeException {
@@ -112,6 +126,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (specialistOptional.isPresent()) {
             return specialistOptional.get();
         }
-        throw new RuntimeException("No such specialist working");
+        throw new SpecialistException("No such specialist working");
     }
 }

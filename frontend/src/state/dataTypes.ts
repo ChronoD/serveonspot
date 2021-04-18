@@ -1,14 +1,15 @@
 export interface Appointment {
   appointmentId: number;
-  egisteredAt: string;
-  unregisteredAt: string;
-  unregistered: boolean;
-  startedAt: string;
-  started: boolean;
-  finishedAt: string;
-  finished: boolean;
   specialist: Specialist;
+  status: AppointmentStatus;
 }
+
+export type AppointmentStatus =
+  | "REGISTERED"
+  | "UNREGISTERED"
+  | "STARTED"
+  | "FINISHED"
+  | "CANCELLED";
 
 export interface Specialist {
   specialistId: number;

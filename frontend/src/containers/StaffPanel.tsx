@@ -1,8 +1,9 @@
+import { Col, Row } from "antd";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { StaffAppointments } from "../components/StaffAppointments";
 import { StaffLogIn } from "../components/StaffLogIn";
-import { StaffLogOut } from "../components/StaffLogOut";
+import { StaffUserInfo } from "../components/StaffUserInfo";
 import {
   authenticateStaffMember,
   cancelAxiosInterceptors,
@@ -78,23 +79,25 @@ export function StaffPanel({}: Props) {
 
   return (
     <div>
-      {userInfo && !appointments && <> "Laukiama specialisto duomenų"</>}
-      {!isAuthenticated && <StaffLogIn onSubmit={logIn} />}
+      <Row justify="center">
+        {!isAuthenticated && <StaffLogIn onSubmit={logIn} />}
+      </Row>
       {isAuthenticated && (
-        <>
-          {appointments && (
+        <Row justify="center">
+          {userInfo && <StaffUserInfo userInfo={userInfo} logout={logOut} />}
+          {appointments && userInfo && (
             <StaffAppointments
+              userInfo={userInfo}
               appointments={appointments}
               appointmentsError={appointmentsError}
-              startAppointment={updateAppointment("start")}
-              endAppointment={updateAppointment("finish")}
-              cancelAppointment={updateAppointment("cancel")}
+              startAppointment={updateAppointment("STARTED")}
+              endAppointment={updateAppointment("FINISHED")}
+              cancelAppointment={updateAppointment("CANCELLED")}
               updating={updatingAppointment}
               updatingError={appointmentsError}
             />
           )}
-          <StaffLogOut onClick={logOut} />
-        </>
+        </Row>
       )}
     </div>
   );

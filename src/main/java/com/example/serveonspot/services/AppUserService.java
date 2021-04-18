@@ -15,12 +15,8 @@ import java.util.Optional;
 public class AppUserService implements UserDetailsService {
     private final AppUserRepository appUserRepository;
 
-    //    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    public AppUserService(AppUserRepository appUserRepository
-                          //        ,BCryptPasswordEncoder bCryptPasswordEncoder
-    ) {
+    public AppUserService(AppUserRepository appUserRepository) {
         this.appUserRepository = appUserRepository;
-//        this.bCryptPasswordEncoder=bCryptPasswordEncoder;
     }
 
     @Override
@@ -36,24 +32,6 @@ public class AppUserService implements UserDetailsService {
                     .build();
         }
         throw new UsernameNotFoundException("username not found");
-    }
-
-    public UserDetails saveWithEncryptedPassoword(AppUser appUser) {
-//        String encoded = bCryptPasswordEncoder.encode(appUser.getAppUserPassword());
-//        appUser.setAppUserPassword(encoded);
-        return appUserRepository.save(appUser);
-    }
-
-    public Specialist loadSpecialistByUsername(String username) throws UsernameNotFoundException {
-
-        Optional<AppUser> userOptional = appUserRepository.findByUsername(username);
-        if (userOptional.isPresent()) {
-            AppUser u = userOptional.get();
-            if (u.getSpecialist() != null) {
-                return u.getSpecialist();
-            }
-        }
-        throw new UsernameNotFoundException("Specialist not found");
     }
 
     public AppUser loadAppUserByUsername(String username) throws UsernameNotFoundException {

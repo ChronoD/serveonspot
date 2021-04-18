@@ -1,7 +1,8 @@
-import { Button } from "antd";
-import { Appointment } from "../state/dataTypes";
+import { Button, Card, Col, List, Row } from "antd";
+import { Appointment, UserInfo } from "../state/dataTypes";
 
 interface Props {
+  userInfo: UserInfo;
   appointments: Appointment[];
   appointmentsError?: Error;
   startAppointment: (appointmentId: number) => void;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function StaffAppointments({
+  userInfo,
   appointments,
   appointmentsError,
   startAppointment,
@@ -21,40 +23,58 @@ export function StaffAppointments({
   updatingError,
 }: Props) {
   return (
-    <div>
-      <>
-        <div>Vizitai:</div>
-        {appointments.map((a: Appointment, index: number) => (
-          <div key={a.appointmentId}>
-            <p key={a.appointmentId}>{`${a.appointmentId} ${
-              a.started ? "vyksta" : "laukia"
-            } `}</p>
-            {index === 0 && (
-              <>
+    <>
+      {userInfo && !appointments && <> "Laukiama vizitų duomenų"</>}
+      <Row justify="center">
+        <Col span={12}>Vizitai:</Col>
+      </Row>
+      <Row justify="center">
+        <List
+          itemLayout="horizontal"
+          dataSource={appointments}
+          locale={{ emptyText: "Šiuo metu prisiregistravusių nėra." }}
+          renderItem={(appointment) => (
+            <List.Item>
+              <Card
+                style={{
+                  width: 300,
+                  border:
+                    appointment.status === "STARTED"
+                      ? "5px solid green"
+                      : "5px solid yellow",
+                }}
+                title={`${appointment.appointmentId}: ${
+                  appointment.status === "REGISTERED" ? "laukia" : "vyksta"
+                }`}
+                extra={
+                  <Button
+                    onClick={() => cancelAppointment(appointment.appointmentId)}
+                    loading={updating}
+                    size="small"
+                  >
+                    atšaukti
+                  </Button>
+                }
+              >
                 <Button
-                  onClick={() => startAppointment(a.appointmentId)}
+                  disabled={appointment.status === "STARTED"}
+                  onClick={() => startAppointment(appointment.appointmentId)}
                   loading={updating}
                 >
                   pradėti
                 </Button>
                 <Button
-                  onClick={() => endAppointment(a.appointmentId)}
+                  disabled={appointment.status !== "STARTED"}
+                  onClick={() => endAppointment(appointment.appointmentId)}
                   loading={updating}
                 >
                   baigti
                 </Button>
-                <Button
-                  onClick={() => cancelAppointment(a.appointmentId)}
-                  loading={updating}
-                >
-                  atšaukti
-                </Button>
-              </>
-            )}
-          </div>
-        ))}
-        {!appointments.length && <div>Šiuo metu nėra prisiregistravusių</div>}
-      </>
-    </div>
+              </Card>
+            </List.Item>
+          )}
+        />
+      </Row>
+    </>
   );
 }
