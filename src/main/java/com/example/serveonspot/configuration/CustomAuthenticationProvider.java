@@ -1,7 +1,6 @@
 package com.example.serveonspot.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,15 +15,10 @@ import java.util.ArrayList;
 
 public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Autowired
-    private  UserDetailsService userDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Autowired
-    private  BCryptPasswordEncoder encoder;
-//
-//    public CustomAuthenticationProvider(UserDetailsService userDetailsService) {
-//        this.userDetailsService = userDetailsService;
-//
-//    }
+    private BCryptPasswordEncoder encoder;
 
     @Override
     public Authentication authenticate(Authentication authentication)
@@ -32,7 +26,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         String name = authentication.getName();
         String password = authentication.getCredentials().toString();
-        if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(password)) {
+        if (!StringUtils.hasText(name) && !StringUtils.hasText(password)) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(name);
             if (encoder.matches(password, userDetails.getPassword())) {
                 UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails,
@@ -41,9 +35,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 return token;
             }
         }
-//
-//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(name,password, new ArrayList<>());
-//        return authenticationToken;
+
         return new UsernamePasswordAuthenticationToken(
                 name, password, new ArrayList<>());
     }
@@ -53,7 +45,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     public boolean supports(Class<?> authentication) {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
-
 
 
 }

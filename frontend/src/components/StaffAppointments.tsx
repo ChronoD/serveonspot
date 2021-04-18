@@ -22,11 +22,15 @@ export function StaffAppointments({
   updating,
   updatingError,
 }: Props) {
+  const isAdmin = userInfo.authority === "ADMIN";
   return (
     <>
-      <Row justify="center">
-        {userInfo && !appointments && <> "Laukiama vizitų duomenų"</>}
-        <Col span={12}>Vizitai:</Col>
+      <Row>
+        <Col span={12} offset={6}>
+          {userInfo && !appointments ? "Laukiama vizitų duomenų" : "Vizitai"}
+        </Col>
+      </Row>
+      {appointments !== undefined && (
         <Row justify="center">
           <List
             itemLayout="horizontal"
@@ -35,6 +39,7 @@ export function StaffAppointments({
             renderItem={(appointment) => (
               <List.Item>
                 <Card
+                  bodyStyle={{ display: isAdmin ? "none" : undefined }}
                   style={{
                     width: 300,
                     border:
@@ -46,37 +51,47 @@ export function StaffAppointments({
                     appointment.status === "REGISTERED" ? "laukia" : "vyksta"
                   }`}
                   extra={
-                    <Button
-                      onClick={() =>
-                        cancelAppointment(appointment.appointmentId)
-                      }
-                      loading={updating}
-                      size="small"
-                    >
-                      atšaukti
-                    </Button>
+                    !isAdmin && (
+                      <Button
+                        onClick={() =>
+                          cancelAppointment(appointment.appointmentId)
+                        }
+                        loading={updating}
+                        size="small"
+                      >
+                        atšaukti
+                      </Button>
+                    )
                   }
                 >
-                  <Button
-                    disabled={appointment.status === "STARTED"}
-                    onClick={() => startAppointment(appointment.appointmentId)}
-                    loading={updating}
-                  >
-                    pradėti
-                  </Button>
-                  <Button
-                    disabled={appointment.status !== "STARTED"}
-                    onClick={() => endAppointment(appointment.appointmentId)}
-                    loading={updating}
-                  >
-                    baigti
-                  </Button>
+                  {!isAdmin && (
+                    <>
+                      <Button
+                        disabled={appointment.status === "STARTED"}
+                        onClick={() =>
+                          startAppointment(appointment.appointmentId)
+                        }
+                        loading={updating}
+                      >
+                        pradėti
+                      </Button>
+                      <Button
+                        disabled={appointment.status !== "STARTED"}
+                        onClick={() =>
+                          endAppointment(appointment.appointmentId)
+                        }
+                        loading={updating}
+                      >
+                        baigti
+                      </Button>
+                    </>
+                  )}
                 </Card>
               </List.Item>
             )}
           />
         </Row>
-      </Row>
+      )}
     </>
   );
 }

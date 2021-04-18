@@ -8,6 +8,28 @@ import {
 } from "../state/dataTypes";
 import { EventSourcePolyfill } from "event-source-polyfill";
 
+export function initializeSpecialistsSource(
+  onSuccess: (specialists: Specialist[]) => void,
+  onError: (error: Error) => void
+): EventSource {
+  const specialistsSource = new EventSource(
+    "http://127.0.0.1:8080/specialists"
+  );
+  specialistsSource.onerror = () => {
+    onError(new Error("Nepavyko gauti specialistų"));
+    if (specialistsSource.readyState === 2) {
+      setTimeout(initializeSpecialistsSource, 300);
+    }
+  };
+  specialistsSource.onmessage = (message) => {
+    const data = JSON.parse(message.data);
+    console.log(data);
+
+    onSuccess(data);
+  };
+  return specialistsSource;
+}
+
 export function registerAppointment(
   specialistId: number,
   onSuccess: (appointmentInfo: AppointmentInfo) => void,
@@ -32,7 +54,7 @@ export function registerAppointment(
     });
 }
 
-export function initializeTrackedAppointmentSource(
+export function initializeWatchedAppointmentSource(
   appointmentId: number,
   onSuccess: (appointmentInfo: AppointmentInfo) => void
 ): EventSource {
@@ -41,13 +63,13 @@ export function initializeTrackedAppointmentSource(
   );
   appointmentsSource.onerror = () => {
     if (appointmentsSource.readyState === 2) {
-      setTimeout(initializeTrackedAppointmentSource, 300);
+      setTimeout(initializeWatchedAppointmentSource, 300);
     }
   };
   appointmentsSource.onmessage = (message) => {
-    console.log("appointment", message);
-
     const data = JSON.parse(message.data);
+    console.log("appointment", data);
+
     onSuccess(data);
   };
   return appointmentsSource;
@@ -74,34 +96,10 @@ export function unregisterAppointment(
     });
 }
 
-export function updateAppointmentStatus(
-  appointmentId: number,
-  appointmentStatus: string,
-  onSuccess: (appointment: Appointment) => void,
-  onError: (error: Error) => void
-) {
-  return axios
-    .patch(
-      `http://localhost:8080/appointments/${appointmentId}`,
-      { status: appointmentStatus },
-      {
-        headers: { "Access-Control-Allow-Origin": "*" },
-      }
-    )
-    .then((res) => {
-      onSuccess(res.data);
-    })
-    .catch((error) => {
-      onError(error);
-    });
-}
-
 export function authenticateStaffMember(
   loginDetais: LoginDetails,
   setAuthHeader: (userInfo: UserInfo, header: string) => void
 ) {
-  console.log(loginDetais.username);
-
   const authToken = createBasicAuthToken(loginDetais);
   console.log(authToken);
   return axios
@@ -116,7 +114,7 @@ export function authenticateStaffMember(
       console.log(data);
 
       setAuthHeader(data, authToken);
-      setupAxiosInterceptors(authToken);
+      // setupAxiosInterceptors(authToken);
     })
     .catch((error) => {
       console.log(error);
@@ -148,49 +146,34 @@ export function initializeAppointmentsSource(
   return appointmentsSource;
 }
 
-export function initializeSpecialistsSource(
-  onSuccess: (specialists: Specialist[]) => void,
+export function updateAppointmentStatus(
+  appointmentId: number,
+  appointmentStatus: string,
+  authToken: string,
+  onSuccess: (appointment: Appointment) => void,
   onError: (error: Error) => void
-): EventSource {
-  const specialistsSource = new EventSource(
-    "http://127.0.0.1:8080/specialists"
-  );
-  specialistsSource.onerror = () => {
-    onError(new Error("Nepavyko gauti specialistų"));
-    if (specialistsSource.readyState === 2) {
-      setTimeout(initializeSpecialistsSource, 300);
-    }
-  };
-  specialistsSource.onmessage = (message) => {
-    // console.log(message);
-    const data = JSON.parse(message.data);
-    onSuccess(data);
-  };
-  return specialistsSource;
+) {
+  return axios
+    .patch(
+      `http://localhost:8080/appointments/${appointmentId}`,
+      { status: appointmentStatus },
+      {
+        headers: {
+          authorization: `${authToken}`,
+          "Access-Control-Allow-Origin": "http://localhost:3000",
+        },
+      }
+    )
+    .then((res) => {
+      onSuccess(res.data);
+    })
+    .catch((error) => {
+      onError(error);
+    });
 }
 
 function createBasicAuthToken(loginDetails: LoginDetails) {
   const { username, password } = loginDetails;
   const unencodedDetails = username + ":" + password;
   return "Basic " + Buffer.from(unencodedDetails).toString("base64");
-}
-
-function setupAxiosInterceptors(header: string) {
-  // const { userAuthority, authenticationHeader } = appState;
-  axios.interceptors.request.use((request) => {
-    // if (userAuthority && authenticationHeader) {
-    request.headers.authorization = header;
-    // }
-    return request;
-  });
-}
-
-export function cancelAxiosInterceptors() {
-  // const { userAuthority, authenticationHeader } = appState;
-  axios.interceptors.request.use((request) => {
-    // if (userAuthority && authenticationHeader) {
-    request.headers.authorization = null;
-    // }
-    return request;
-  });
 }

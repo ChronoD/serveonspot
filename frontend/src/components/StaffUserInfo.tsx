@@ -13,6 +13,9 @@ export function StaffUserInfo({ userInfo, logout }: Props) {
       <Row>
         <Col span={6} offset={16}>
           <Row justify="end">
+            <Button onClick={logout}>Atsijungti</Button>
+          </Row>
+          <Row justify="end">
             <div>{`Prisijunges kaip:`}</div>
           </Row>
           <Row justify="end" align="middle">
@@ -21,9 +24,6 @@ export function StaffUserInfo({ userInfo, logout }: Props) {
                 ? userInfo.specialist.specialistInfo
                 : userInfo.authority}
             </div>
-          </Row>
-          <Row justify="end">
-            <Button onClick={logout}>Atsijungti</Button>
           </Row>
         </Col>
       </Row>

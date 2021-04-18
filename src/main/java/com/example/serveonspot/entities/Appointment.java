@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 
 @Entity
@@ -78,8 +79,16 @@ public class Appointment {
     }
 
     @Override
-    public String toString() {
-        return String.format("%03d", this.appointmentId);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Appointment that = (Appointment) o;
+        return appointmentId == that.appointmentId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(appointmentId);
     }
 
     public int getAppointmentId() {

@@ -76,6 +76,9 @@ export const customerSlice = createSlice({
       state.unregisteringAppointment = false;
       state.unregisteringAppointmentError = action.payload;
     },
+    resetCustomerState: (state) => {
+      return initialState;
+    },
     // Use the PayloadAction type to declare the contents of `action.payload`
   },
 });
@@ -90,6 +93,7 @@ export const {
   unregistering,
   unregisteringSuccess,
   unregisteringError,
+  resetCustomerState,
 } = customerSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type

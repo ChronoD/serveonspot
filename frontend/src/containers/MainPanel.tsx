@@ -24,7 +24,7 @@ export function MainPanel({}: Props) {
     <Layout>
       <Header />
       <Content style={{ minHeight: "30rem" }}>
-        <Col span={24} offset={16}>
+        <Col span={24} offset={18}>
           {!appointmentInfo && !userInfo && (
             <Button onClick={toggleMode}>
               {customerMode ? "Darbuotojams" : "Grįžti"}

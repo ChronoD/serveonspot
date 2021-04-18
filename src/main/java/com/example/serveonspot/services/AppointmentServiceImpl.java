@@ -9,6 +9,9 @@ import com.example.serveonspot.entities.Appointment;
 import com.example.serveonspot.entities.Specialist;
 import com.example.serveonspot.repositories.AppointmentRepository;
 import com.example.serveonspot.repositories.SpecialistRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,10 +22,12 @@ import java.util.stream.Collectors;
 public class AppointmentServiceImpl implements AppointmentService {
     private final SpecialistRepository specialistRepository;
     private final AppointmentRepository appointmentRepository;
+    private final AppUserService appUserService;
 
-    public AppointmentServiceImpl(SpecialistRepository specialistRepository, AppointmentRepository appointmentRepository) {
+    public AppointmentServiceImpl(SpecialistRepository specialistRepository, AppointmentRepository appointmentRepository, AppUserService appUserService) {
         this.specialistRepository = specialistRepository;
         this.appointmentRepository = appointmentRepository;
+        this.appUserService = appUserService;
     }
 
     @Override
@@ -55,7 +60,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public CustomerPositionOutput watchAnAppointment(Integer appointmentId) {
-        Appointment customersAppointment = getOngoingAppointmentById(appointmentId);
+        Appointment customersAppointment = getAppointmentById(appointmentId);
         List<Appointment> allAppointments = getOngoingAppointmentsWithStartedFirst();
 
         return new CustomerPositionOutput(customersAppointment, allAppointments);
@@ -69,13 +74,17 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    @PreAuthorize("hasRole('SPECIALIST')")
     public void startAnAppointment(Integer appointmentId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AppUser appUser = appUserService.loadAppUserByUsername(authentication.getName());
         Appointment appointment = getOngoingAppointmentById(appointmentId);
         appointment.start();
         appointmentRepository.save(appointment);
     }
 
     @Override
+    @PreAuthorize("hasRole('SPECIALIST')")
     public void finishAnAppointment(Integer appointmentId) {
         Appointment appointment = getOngoingAppointmentById(appointmentId);
         appointment.finish();
@@ -83,6 +92,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    @PreAuthorize("hasRole('SPECIALIST')")
     public void cancelAnAppointment(Integer appointmentId) {
         Appointment appointment = getOngoingAppointmentById(appointmentId);
         appointment.cancel();
@@ -102,16 +112,12 @@ public class AppointmentServiceImpl implements AppointmentService {
     private List<Appointment> getOngoingAppointmentsWithStartedFirst() {
         return appointmentRepository.findAll().stream()
                 .filter(a -> isAppointmentOngoing(a))
-                .sorted((a, b)-> (a.getStatus()).compareTo(a.getStatus()))
+                .sorted((a, b) -> (a.getStatus()).compareTo(a.getStatus()))
                 .collect(Collectors.toList());
     }
 
-    private List<Appointment> getOngoingAppointmentsBySpecialistWithStartedFirst(Specialist specialist) {
-        return appointmentRepository.findAll().stream()
-                .filter(a-> a.getSpecialist().equals(specialist))
-                .filter(a -> isAppointmentOngoing(a))
-                .sorted((a, b)-> (a.getStatus()).compareTo(a.getStatus()))
-                .collect(Collectors.toList());
+    private Appointment getAppointmentById(Integer appointmentId) {
+        return appointmentRepository.findById(appointmentId).orElseThrow(() -> new AppointmentException("No such appointment"));
     }
 
     private boolean isAppointmentOngoing(Appointment appt) {

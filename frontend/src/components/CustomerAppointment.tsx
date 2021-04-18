@@ -6,12 +6,14 @@ interface Props {
   unregisterAppointment: () => void;
   unregistering: boolean;
   unregisteringError: Error | undefined;
+  returnToMenu: () => void;
 }
 
 export function CustomerAppointment({
   appointmentInfo,
   unregisterAppointment,
   unregistering,
+  returnToMenu,
 }: Props) {
   const {
     positionOnTheList,
@@ -24,7 +26,7 @@ export function CustomerAppointment({
   return (
     <>
       <Card
-        title={`Nr. ${positionOnTheList} pas ${specialist.specialistInfo}`}
+        title={`${specialist.specialistInfo}`}
         style={{
           width: 300,
           border: status === "STARTED" ? "5px solid green" : "5px solid yellow",
@@ -35,13 +37,21 @@ export function CustomerAppointment({
           <p>{message}</p>
           <p>{approximateTimeLeft}</p>
         </>
-        <Button
-          type="primary"
-          onClick={unregisterAppointment}
-          loading={unregistering}
-        >
-          Atšaukti
-        </Button>
+        {status !== "FINISHED" && (
+          <Button
+            type="primary"
+            disabled={status !== "REGISTERED"}
+            onClick={unregisterAppointment}
+            loading={unregistering}
+          >
+            Atšaukti
+          </Button>
+        )}
+        {status === "FINISHED" && (
+          <Button type="primary" onClick={returnToMenu}>
+            Atgal
+          </Button>
+        )}
       </Card>
     </>
   );

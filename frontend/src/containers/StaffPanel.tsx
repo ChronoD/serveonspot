@@ -6,7 +6,7 @@ import { StaffLogIn } from "../components/StaffLogIn";
 import { StaffUserInfo } from "../components/StaffUserInfo";
 import {
   authenticateStaffMember,
-  cancelAxiosInterceptors,
+  // cancelAxiosInterceptors,
   initializeAppointmentsSource,
   unregisterAppointment,
   updateAppointmentStatus,
@@ -50,6 +50,7 @@ export function StaffPanel({}: Props) {
     updateAppointmentStatus(
       appointmentId,
       status,
+      authenticationHeader || "",
       (appointment: Appointment) =>
         dispatch(updateAppointmentSuccess(appointment)),
       (error: Error) => dispatch(updateAppointmentError(error))
@@ -57,7 +58,7 @@ export function StaffPanel({}: Props) {
   };
 
   function logOut(): void {
-    cancelAxiosInterceptors();
+    // cancelAxiosInterceptors();
     dispatch(resetStaffState());
   }
 
@@ -78,13 +79,13 @@ export function StaffPanel({}: Props) {
   }, [userInfo]);
 
   return (
-    <div>
-      <Row justify="center">
-        {!isAuthenticated && <StaffLogIn onSubmit={logIn} />}
-      </Row>
+    <>
+      {!isAuthenticated && <StaffLogIn onSubmit={logIn} />}
       {isAuthenticated && (
-        <Row justify="center">
-          {userInfo && <StaffUserInfo userInfo={userInfo} logout={logOut} />}
+        <Col span={24}>
+          <Col span={24}>
+            {userInfo && <StaffUserInfo userInfo={userInfo} logout={logOut} />}
+          </Col>
           {userInfo && (
             <StaffAppointments
               userInfo={userInfo}
@@ -97,8 +98,8 @@ export function StaffPanel({}: Props) {
               updatingError={appointmentsError}
             />
           )}
-        </Row>
+        </Col>
       )}
-    </div>
+    </>
   );
 }

@@ -1,4 +1,4 @@
-import { Button, Form, Input } from "antd";
+import { Button, Col, Form, Input, Row } from "antd";
 import { LoginDetails } from "../state/dataTypes";
 
 interface Props {
@@ -15,32 +15,34 @@ const tailLayout = {
 
 export function StaffLogIn({ onSubmit }: Props) {
   return (
-    <Form
-      {...layout}
-      name="basic"
-      initialValues={{ remember: true }}
-      onFinish={onSubmit}
-    >
-      <Form.Item
-        label="Vartotojo vardas"
-        name="username"
-        rules={[{ required: true, message: "Vartotojo vardas būtinas!" }]}
+    <Row>
+      <Form
+        {...layout}
+        name="basic"
+        initialValues={{ remember: true }}
+        onFinish={onSubmit}
       >
-        <Input />
-      </Form.Item>
+        <Form.Item
+          label="Vartotojas"
+          name="username"
+          rules={[{ required: true, message: "Vartotojo vardas būtinas!" }]}
+        >
+          <Input />
+        </Form.Item>
 
-      <Form.Item
-        label="Slaptažodis"
-        name="password"
-        rules={[{ required: true, message: "Slaptažodis būtinas!" }]}
-      >
-        <Input.Password />
-      </Form.Item>
-      <Form.Item {...tailLayout}>
-        <Button type="primary" htmlType="submit">
-          Prisijungti
-        </Button>
-      </Form.Item>
-    </Form>
+        <Form.Item
+          label="Slaptažodis"
+          name="password"
+          rules={[{ required: true, message: "Slaptažodis būtinas!" }]}
+        >
+          <Input.Password />
+        </Form.Item>
+        <Form.Item {...tailLayout}>
+          <Button type="primary" htmlType="submit">
+            Prisijungti
+          </Button>
+        </Form.Item>
+      </Form>
+    </Row>
   );
 }

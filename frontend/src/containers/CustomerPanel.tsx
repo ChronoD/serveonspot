@@ -8,10 +8,11 @@ import {
   postingAppointmentSuccess,
   unregisteringSuccess,
   unregisteringError,
+  resetCustomerState,
 } from "../state/sliceCustomer";
 import {
   initializeSpecialistsSource,
-  initializeTrackedAppointmentSource,
+  initializeWatchedAppointmentSource,
   registerAppointment,
   unregisterAppointment,
 } from "../functions/apiFunctions";
@@ -90,7 +91,7 @@ export function CustomerPanel({}: Props) {
 
   useEffect(() => {
     if (appointmentInfo) {
-      appointmentSource = initializeTrackedAppointmentSource(
+      appointmentSource = initializeWatchedAppointmentSource(
         appointmentInfo.appointmentId,
         trackAppointmentSuccess
       );
@@ -128,6 +129,7 @@ export function CustomerPanel({}: Props) {
           }
           unregistering={unregisteringAppointment}
           unregisteringError={unregisteringAppointmentError}
+          returnToMenu={() => dispatch(resetCustomerState())}
         />
       )}
     </div>

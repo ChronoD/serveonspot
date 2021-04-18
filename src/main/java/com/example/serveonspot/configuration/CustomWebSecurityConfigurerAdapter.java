@@ -18,12 +18,6 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-//                authorizeRequests()
-//                .antMatchers("/specialists").permitAll()
-//                .antMatchers("/appointments").authenticated()
-//                .antMatchers("/appointments/**").permitAll()
-//                .antMatchers("/user").permitAll()
-//                .and()
                 .httpBasic().authenticationEntryPoint(customBasicAuthenticationEntryPoint())
                 .and()
                 .headers().frameOptions().disable()
@@ -34,16 +28,16 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
     }
 
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(customBasicAuthenticationProvider());
-    }
-
-    @Bean
-    public AuthenticationProvider customBasicAuthenticationProvider() {
-        return new CustomAuthenticationProvider();
-    }
-
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.authenticationProvider(customBasicAuthenticationProvider());
+//    }
+//
+//    @Bean
+//    public AuthenticationProvider customBasicAuthenticationProvider() {
+//        return new CustomAuthenticationProvider();
+//    }
+//
     @Bean
     public AuthenticationEntryPoint customBasicAuthenticationEntryPoint() {
         return new CustomBasicAuthenticationEntryPoint();
@@ -53,6 +47,5 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 
 }
