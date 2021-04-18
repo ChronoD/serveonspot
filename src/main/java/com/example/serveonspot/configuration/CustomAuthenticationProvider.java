@@ -1,5 +1,6 @@
 package com.example.serveonspot.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,14 +12,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-@Component
+import java.util.ArrayList;
+
 public class CustomAuthenticationProvider implements AuthenticationProvider {
-    private final UserDetailsService userDetailsService;
+    @Autowired
+    private  UserDetailsService userDetailsService;
 
-    public CustomAuthenticationProvider(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-
-    }
+    @Autowired
+    private  BCryptPasswordEncoder encoder;
+//
+//    public CustomAuthenticationProvider(UserDetailsService userDetailsService) {
+//        this.userDetailsService = userDetailsService;
+//
+//    }
 
     @Override
     public Authentication authenticate(Authentication authentication)
@@ -28,27 +34,26 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String password = authentication.getCredentials().toString();
         if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(password)) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(name);
-            if (passwordEncoder().matches(password, userDetails.getPassword())) {
+            if (encoder.matches(password, userDetails.getPassword())) {
                 UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails,
                         userDetails.getPassword(), userDetails.getAuthorities());
                 token.setDetails(userDetails);
                 return token;
             }
         }
-
-        throw new RuntimeException("No such authentication");
-//        return new UsernamePasswordAuthenticationToken(
-//                name, password, new ArrayList<>());
+//
+//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(name,password, new ArrayList<>());
+//        return authenticationToken;
+        return new UsernamePasswordAuthenticationToken(
+                name, password, new ArrayList<>());
     }
+
 
     @Override
     public boolean supports(Class<?> authentication) {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+
 
 }

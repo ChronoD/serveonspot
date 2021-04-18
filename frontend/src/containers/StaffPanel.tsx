@@ -85,7 +85,7 @@ export function StaffPanel({}: Props) {
       {isAuthenticated && (
         <Row justify="center">
           {userInfo && <StaffUserInfo userInfo={userInfo} logout={logOut} />}
-          {appointments && userInfo && (
+          {userInfo && (
             <StaffAppointments
               userInfo={userInfo}
               appointments={appointments}

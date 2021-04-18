@@ -30,7 +30,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         String appUserAuthority = appUser.getAuthority();
         switch (appUserAuthority) {
             case "ADMIN":
-                return getOngoingAppointmentsStartedFirst(5);
+                return getOngoingAppointmentsWithStartedFirst(5);
             case "SPECIALIST":
                 Integer specialistId = appUser.getSpecialist().getSpecialistId();
                 return getOngoingAppointmentsBySpecialist(specialistId);
@@ -48,7 +48,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     public CustomerPositionOutput registerAnAppointment(Integer specialistId) {
         Specialist specialist = getWorkingSpecialistById(specialistId);
         Appointment appointment = appointmentRepository.save(new Appointment(specialist));
-        List<Appointment> allAppointments = getOngoingAppointmentsStartedFirst();
+        List<Appointment> allAppointments = getOngoingAppointmentsWithStartedFirst();
 
         return new CustomerPositionOutput(appointment, allAppointments);
     }
@@ -56,7 +56,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public CustomerPositionOutput watchAnAppointment(Integer appointmentId) {
         Appointment customersAppointment = getOngoingAppointmentById(appointmentId);
-        List<Appointment> allAppointments = getOngoingAppointmentsStartedFirst();
+        List<Appointment> allAppointments = getOngoingAppointmentsWithStartedFirst();
+
         return new CustomerPositionOutput(customersAppointment, allAppointments);
     }
 
@@ -88,18 +89,26 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointmentRepository.save(appointment);
     }
 
-    public List<Appointment> getOngoingAppointmentsStartedFirst(Integer waitingLineLength) {
-        return getOngoingAppointmentsStartedFirst();
+    public List<Appointment> getOngoingAppointmentsWithStartedFirst(Integer waitingLineLength) {
+        return getOngoingAppointmentsWithStartedFirst();
     }
 
     public List<Appointment> getOngoingAppointmentsBySpecialist(Integer specialistId) {
-        return getOngoingAppointmentsStartedFirst().stream()
+        return getOngoingAppointmentsWithStartedFirst().stream()
                 .filter(a -> a.getSpecialist().getSpecialistId() == specialistId)
                 .collect(Collectors.toList());
     }
 
-    private List<Appointment> getOngoingAppointmentsStartedFirst() {
+    private List<Appointment> getOngoingAppointmentsWithStartedFirst() {
         return appointmentRepository.findAll().stream()
+                .filter(a -> isAppointmentOngoing(a))
+                .sorted((a, b)-> (a.getStatus()).compareTo(a.getStatus()))
+                .collect(Collectors.toList());
+    }
+
+    private List<Appointment> getOngoingAppointmentsBySpecialistWithStartedFirst(Specialist specialist) {
+        return appointmentRepository.findAll().stream()
+                .filter(a-> a.getSpecialist().equals(specialist))
                 .filter(a -> isAppointmentOngoing(a))
                 .sorted((a, b)-> (a.getStatus()).compareTo(a.getStatus()))
                 .collect(Collectors.toList());

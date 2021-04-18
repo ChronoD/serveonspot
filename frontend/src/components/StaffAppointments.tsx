@@ -3,7 +3,7 @@ import { Appointment, UserInfo } from "../state/dataTypes";
 
 interface Props {
   userInfo: UserInfo;
-  appointments: Appointment[];
+  appointments: Appointment[] | undefined;
   appointmentsError?: Error;
   startAppointment: (appointmentId: number) => void;
   endAppointment: (appointmentId: number) => void;
@@ -24,56 +24,58 @@ export function StaffAppointments({
 }: Props) {
   return (
     <>
-      {userInfo && !appointments && <> "Laukiama vizitų duomenų"</>}
       <Row justify="center">
+        {userInfo && !appointments && <> "Laukiama vizitų duomenų"</>}
         <Col span={12}>Vizitai:</Col>
-      </Row>
-      <Row justify="center">
-        <List
-          itemLayout="horizontal"
-          dataSource={appointments}
-          locale={{ emptyText: "Šiuo metu prisiregistravusių nėra." }}
-          renderItem={(appointment) => (
-            <List.Item>
-              <Card
-                style={{
-                  width: 300,
-                  border:
-                    appointment.status === "STARTED"
-                      ? "5px solid green"
-                      : "5px solid yellow",
-                }}
-                title={`${appointment.appointmentId}: ${
-                  appointment.status === "REGISTERED" ? "laukia" : "vyksta"
-                }`}
-                extra={
+        <Row justify="center">
+          <List
+            itemLayout="horizontal"
+            dataSource={appointments}
+            locale={{ emptyText: "Šiuo metu prisiregistravusių nėra." }}
+            renderItem={(appointment) => (
+              <List.Item>
+                <Card
+                  style={{
+                    width: 300,
+                    border:
+                      appointment.status === "STARTED"
+                        ? "5px solid green"
+                        : "5px solid yellow",
+                  }}
+                  title={`${appointment.appointmentId}: ${
+                    appointment.status === "REGISTERED" ? "laukia" : "vyksta"
+                  }`}
+                  extra={
+                    <Button
+                      onClick={() =>
+                        cancelAppointment(appointment.appointmentId)
+                      }
+                      loading={updating}
+                      size="small"
+                    >
+                      atšaukti
+                    </Button>
+                  }
+                >
                   <Button
-                    onClick={() => cancelAppointment(appointment.appointmentId)}
+                    disabled={appointment.status === "STARTED"}
+                    onClick={() => startAppointment(appointment.appointmentId)}
                     loading={updating}
-                    size="small"
                   >
-                    atšaukti
+                    pradėti
                   </Button>
-                }
-              >
-                <Button
-                  disabled={appointment.status === "STARTED"}
-                  onClick={() => startAppointment(appointment.appointmentId)}
-                  loading={updating}
-                >
-                  pradėti
-                </Button>
-                <Button
-                  disabled={appointment.status !== "STARTED"}
-                  onClick={() => endAppointment(appointment.appointmentId)}
-                  loading={updating}
-                >
-                  baigti
-                </Button>
-              </Card>
-            </List.Item>
-          )}
-        />
+                  <Button
+                    disabled={appointment.status !== "STARTED"}
+                    onClick={() => endAppointment(appointment.appointmentId)}
+                    loading={updating}
+                  >
+                    baigti
+                  </Button>
+                </Card>
+              </List.Item>
+            )}
+          />
+        </Row>
       </Row>
     </>
   );

@@ -25,6 +25,7 @@ export function CustomerSpecialists({
           {specialists.length && (
             <>
               <div>Dirbantys specialistai:</div>
+
               <List
                 itemLayout="vertical"
                 size="large"
@@ -32,16 +33,15 @@ export function CustomerSpecialists({
                 renderItem={(spec) => (
                   <List.Item>
                     <Card
-                      title={spec.specialistId}
+                      title={spec.specialistInfo}
                       style={{ border: "5px solid green" }}
                     >
-                      <>{spec.specialistType}</>
                       <Button
                         type="primary"
                         onClick={() => registerAppointment(spec.specialistId)}
                         loading={registering}
                       >
-                        Registruotis {spec.specialistId}
+                        Registruotis
                       </Button>
                     </Card>
                   </List.Item>

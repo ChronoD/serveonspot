@@ -52,7 +52,7 @@ public class AppointmentController {
     }
 
     @GetMapping(value = "/{appoitmentId}")
-    public Flux<CustomerPositionOutput> trackAppointment(@PathVariable(value = "appoitmentId") Integer appointmentId) {
+    public Flux<CustomerPositionOutput> watchAppointment(@PathVariable(value = "appoitmentId") Integer appointmentId) {
 
         return Flux.interval(Duration.ofSeconds(1))
                 .map(sequence -> appointmentService.watchAnAppointment(appointmentId));

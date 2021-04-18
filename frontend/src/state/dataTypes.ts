@@ -20,8 +20,10 @@ export interface Specialist {
 
 export interface AppointmentInfo {
   appointmentId: number;
+  status: AppointmentStatus;
   specialist: Specialist;
   positionOnTheList: number;
+  approximateTimeLeft: string;
   message: string;
 }
 

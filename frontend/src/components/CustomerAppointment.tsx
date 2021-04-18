@@ -1,4 +1,4 @@
-import { Button } from "antd";
+import { Button, Card } from "antd";
 import { AppointmentInfo } from "../state/dataTypes";
 
 interface Props {
@@ -13,23 +13,36 @@ export function CustomerAppointment({
   unregisterAppointment,
   unregistering,
 }: Props) {
-  const { appointmentId, message, specialist } = appointmentInfo;
+  const {
+    positionOnTheList,
+    message,
+    specialist,
+    status,
+    approximateTimeLeft,
+  } = appointmentInfo;
 
   return (
-    <div>
-      <>
-        <div>Vizitas:</div>
-        {`Nr. ${appointmentId} pas ${specialist.specialistInfo}`}
-      </>
-      <div>
+    <>
+      <Card
+        title={`Nr. ${positionOnTheList} pas ${specialist.specialistInfo}`}
+        style={{
+          width: 300,
+          border: status === "STARTED" ? "5px solid green" : "5px solid yellow",
+        }}
+      >
         <>
           Informacija:
           <p>{message}</p>
-          <Button onClick={unregisterAppointment} loading={unregistering}>
-            atšaukti
-          </Button>
+          <p>{approximateTimeLeft}</p>
         </>
-      </div>
-    </div>
+        <Button
+          type="primary"
+          onClick={unregisterAppointment}
+          loading={unregistering}
+        >
+          Atšaukti
+        </Button>
+      </Card>
+    </>
   );
 }

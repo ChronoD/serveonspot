@@ -100,7 +100,10 @@ export function authenticateStaffMember(
   loginDetais: LoginDetails,
   setAuthHeader: (userInfo: UserInfo, header: string) => void
 ) {
+  console.log(loginDetais.username);
+
   const authToken = createBasicAuthToken(loginDetais);
+  console.log(authToken);
   return axios
     .get(`http://localhost:8080/user`, {
       headers: {

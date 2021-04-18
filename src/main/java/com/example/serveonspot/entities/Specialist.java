@@ -1,5 +1,6 @@
 package com.example.serveonspot.entities;
 
+import com.example.serveonspot.dtos.SpecialistType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,17 +15,17 @@ import javax.persistence.Id;
 public class Specialist {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int specialistId;
-    private String specialistType;
+    private SpecialistType specialistType;
     private String specialistInfo;
 
-    public Specialist(String specialistType) {
-        this.specialistType = specialistType;
-        this.specialistInfo = generateSpecialistInfo(specialistType);
+    public Specialist(SpecialistType type) {
+        this.specialistInfo = generateSpecialistInfo(type);
+        this.specialistType=type;
     }
 
-    private String generateSpecialistInfo(String specialistType) {
-        return "Vidutiniškai " + specialistType + " minučių specialistas";
+    private String generateSpecialistInfo(SpecialistType type) {
+        return  type + " min. specialistas";
     }
 }
