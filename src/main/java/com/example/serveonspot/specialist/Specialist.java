@@ -1,6 +1,5 @@
-package com.example.serveonspot.entities;
+package com.example.serveonspot.specialist;
 
-import com.example.serveonspot.dtos.SpecialistType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,10 +21,10 @@ public class Specialist {
 
     public Specialist(SpecialistType type) {
         this.specialistInfo = generateSpecialistInfo(type);
-        this.specialistType=type;
+        this.specialistType = type;
     }
 
     private String generateSpecialistInfo(SpecialistType type) {
-        return  type + " min. specialistas";
+        return type + " min. specialistas";
     }
 }

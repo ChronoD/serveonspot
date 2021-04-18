@@ -1,14 +1,11 @@
-package com.example.serveonspot.services;
+package com.example.serveonspot.appointment;
 
 import com.example.serveonspot.configuration.exceptions.AppointmentException;
 import com.example.serveonspot.configuration.exceptions.SpecialistException;
-import com.example.serveonspot.dtos.AppointmentStatus;
-import com.example.serveonspot.dtos.CustomerPositionOutput;
-import com.example.serveonspot.entities.AppUser;
-import com.example.serveonspot.entities.Appointment;
-import com.example.serveonspot.entities.Specialist;
-import com.example.serveonspot.repositories.AppointmentRepository;
-import com.example.serveonspot.repositories.SpecialistRepository;
+import com.example.serveonspot.specialist.Specialist;
+import com.example.serveonspot.specialist.SpecialistRepository;
+import com.example.serveonspot.user.AppUser;
+import com.example.serveonspot.user.AppUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
@@ -31,11 +29,12 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<Appointment> watchOngoingAppointmentsByUser(AppUser appUser) {
+    public List<Appointment> getOngoingAppointmentsByUserRole(AppUser appUser) {
+
         String appUserAuthority = appUser.getAuthority();
         switch (appUserAuthority) {
             case "ADMIN":
-                return getOngoingAppointmentsWithStartedFirst(5);
+                return getOngoingAppointmentsWithStartedFirstAndFiveWaiting(5);
             case "SPECIALIST":
                 Integer specialistId = appUser.getSpecialist().getSpecialistId();
                 return getOngoingAppointmentsBySpecialist(specialistId);
@@ -45,25 +44,25 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<Specialist> watchWorkingSpecialists() {
+    public List<Specialist> getSpecialists() {
         return specialistRepository.findAll();
     }
 
     @Override
-    public CustomerPositionOutput registerAnAppointment(Integer specialistId) {
+    public AppointmentInfoOutput registerAnAppointment(Integer specialistId) {
         Specialist specialist = getWorkingSpecialistById(specialistId);
         Appointment appointment = appointmentRepository.save(new Appointment(specialist));
         List<Appointment> allAppointments = getOngoingAppointmentsWithStartedFirst();
 
-        return new CustomerPositionOutput(appointment, allAppointments);
+        return new AppointmentInfoOutput(appointment, allAppointments);
     }
 
     @Override
-    public CustomerPositionOutput watchAnAppointment(Integer appointmentId) {
+    public AppointmentInfoOutput getAnAppointment(Integer appointmentId) {
         Appointment customersAppointment = getAppointmentById(appointmentId);
         List<Appointment> allAppointments = getOngoingAppointmentsWithStartedFirst();
 
-        return new CustomerPositionOutput(customersAppointment, allAppointments);
+        return new AppointmentInfoOutput(customersAppointment, allAppointments);
     }
 
     @Override
@@ -109,6 +108,19 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .collect(Collectors.toList());
     }
 
+    private List<Appointment> getOngoingAppointmentsWithStartedFirstAndFiveWaiting(int waitingLineLength) {
+        List<Appointment> allStarted = appointmentRepository.findAll().stream()
+                .filter(a -> isAppointmentStarted(a))
+                .collect(Collectors.toList());
+
+        List<Appointment> registeredByLimit = appointmentRepository.findAll().stream()
+                .filter(a -> isAppointmentRegistered(a))
+                .limit(waitingLineLength)
+                .collect(Collectors.toList());
+
+        return Stream.concat(allStarted.stream(), registeredByLimit.stream()).collect(Collectors.toList());
+    }
+
     private List<Appointment> getOngoingAppointmentsWithStartedFirst() {
         return appointmentRepository.findAll().stream()
                 .filter(a -> isAppointmentOngoing(a))
@@ -123,6 +135,14 @@ public class AppointmentServiceImpl implements AppointmentService {
     private boolean isAppointmentOngoing(Appointment appt) {
         return (appt.getStatus().equals(AppointmentStatus.REGISTERED)
                 || appt.getStatus().equals(AppointmentStatus.STARTED));
+    }
+
+    private boolean isAppointmentRegistered(Appointment appt) {
+        return (appt.getStatus().equals(AppointmentStatus.REGISTERED));
+    }
+
+    private boolean isAppointmentStarted(Appointment appt) {
+        return (appt.getStatus().equals(AppointmentStatus.STARTED));
     }
 
     private Appointment getOngoingAppointmentById(Integer appointmentId) throws RuntimeException {

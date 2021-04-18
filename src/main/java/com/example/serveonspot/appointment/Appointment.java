@@ -1,9 +1,8 @@
-package com.example.serveonspot.entities;
+package com.example.serveonspot.appointment;
 
 import com.example.serveonspot.configuration.exceptions.AppointmentStatusException;
-import com.example.serveonspot.dtos.AppointmentStatus;
+import com.example.serveonspot.specialist.Specialist;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;

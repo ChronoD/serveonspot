@@ -1,9 +1,9 @@
 package com.example.serveonspot;
 
 import com.example.serveonspot.configuration.exceptions.AppointmentStatusException;
-import com.example.serveonspot.dtos.AppointmentStatus;
-import com.example.serveonspot.entities.Appointment;
-import com.example.serveonspot.entities.Specialist;
+import com.example.serveonspot.appointment.AppointmentStatus;
+import com.example.serveonspot.appointment.Appointment;
+import com.example.serveonspot.specialist.Specialist;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

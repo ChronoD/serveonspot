@@ -1,14 +1,8 @@
-package com.example.serveonspot.controllers;
+package com.example.serveonspot.appointment;
 
 import com.example.serveonspot.configuration.exceptions.AppointmentStatusException;
-import com.example.serveonspot.dtos.AppointmentBookingInput;
-import com.example.serveonspot.dtos.AppointmentStatus;
-import com.example.serveonspot.dtos.AppointmentStatusInput;
-import com.example.serveonspot.dtos.CustomerPositionOutput;
-import com.example.serveonspot.entities.AppUser;
-import com.example.serveonspot.entities.Appointment;
-import com.example.serveonspot.services.AppUserService;
-import com.example.serveonspot.services.AppointmentService;
+import com.example.serveonspot.user.AppUser;
+import com.example.serveonspot.user.AppUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,22 +34,20 @@ public class AppointmentController {
     public Flux<List<Appointment>> trackOngoingAppointments() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AppUser appUser = appUserService.loadAppUserByUsername(authentication.getName());
-
         return Flux.interval(Duration.ofSeconds(5))
-                .map(sequence -> appointmentService.watchOngoingAppointmentsByUser(appUser));
-
+                .map(sequence -> appointmentService.getOngoingAppointmentsByUserRole(appUser));
     }
 
     @PostMapping
-    public CustomerPositionOutput registerAppointment(@RequestBody @Valid AppointmentBookingInput booking) {
+    public AppointmentInfoOutput registerAppointment(@RequestBody @Valid AppointmentRegistrationInput booking) {
         return appointmentService.registerAnAppointment(booking.getSpecialistId());
     }
 
-    @GetMapping(value = "/{appoitmentId}")
-    public Flux<CustomerPositionOutput> watchAppointment(@PathVariable(value = "appoitmentId") Integer appointmentId) {
+    @GetMapping(value = "/{appointmentId}")
+    public Flux<AppointmentInfoOutput> watchAppointment(@PathVariable(value = "appointmentId") Integer appointmentId) {
 
         return Flux.interval(Duration.ofSeconds(2))
-                .map(sequence -> appointmentService.watchAnAppointment(appointmentId));
+                .map(sequence -> appointmentService.getAnAppointment(appointmentId));
     }
 
 

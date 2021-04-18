@@ -1,7 +1,5 @@
-package com.example.serveonspot.controllers;
+package com.example.serveonspot.user;
 
-import com.example.serveonspot.entities.AppUser;
-import com.example.serveonspot.services.AppUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;

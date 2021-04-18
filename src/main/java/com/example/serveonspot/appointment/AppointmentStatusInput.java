@@ -1,4 +1,4 @@
-package com.example.serveonspot.dtos;
+package com.example.serveonspot.appointment;
 
 import lombok.Data;
 

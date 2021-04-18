@@ -1,8 +1,5 @@
-package com.example.serveonspot.services;
+package com.example.serveonspot.user;
 
-import com.example.serveonspot.entities.AppUser;
-import com.example.serveonspot.entities.Specialist;
-import com.example.serveonspot.repositories.AppUserRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,13 +19,13 @@ public class AppUserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Optional<AppUser> user = appUserRepository.findByUsername(username);
-        if (user.isPresent()) {
-            AppUser u = user.get();
+        Optional<AppUser> userOptional = appUserRepository.findByUsername(username);
+        if (userOptional.isPresent()) {
+            AppUser user = userOptional.get();
 
-            return User.withUsername(u.getUsername())
-                    .password(u.getPassword())
-                    .authorities(u.getAuthority())
+            return User.withUsername(user.getUsername())
+                    .password(user.getPassword())
+                    .authorities(user.getAuthority())
                     .build();
         }
         throw new UsernameNotFoundException("username not found");

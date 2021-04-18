@@ -1,5 +1,6 @@
-package com.example.serveonspot.entities;
+package com.example.serveonspot.user;
 
+import com.example.serveonspot.specialist.Specialist;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,7 +33,7 @@ public class AppUser implements UserDetails {
         this.username = username;
         this.password = password;
         this.authority = authority;
-        this.role=role;
+        this.role = role;
         this.specialist = specialist;
     }
 

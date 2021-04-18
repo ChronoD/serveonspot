@@ -1,6 +1,5 @@
-package com.example.serveonspot.repositories;
+package com.example.serveonspot.user;
 
-import com.example.serveonspot.entities.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

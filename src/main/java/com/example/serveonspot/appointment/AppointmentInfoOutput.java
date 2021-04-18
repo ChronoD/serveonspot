@@ -1,7 +1,7 @@
-package com.example.serveonspot.dtos;
+package com.example.serveonspot.appointment;
 
-import com.example.serveonspot.entities.Appointment;
-import com.example.serveonspot.entities.Specialist;
+import com.example.serveonspot.specialist.Specialist;
+import com.example.serveonspot.specialist.SpecialistType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
-public class CustomerPositionOutput {
+public class AppointmentInfoOutput {
     private int appointmentId;
     private Specialist specialist;
     private AppointmentStatus status;
@@ -19,7 +19,7 @@ public class CustomerPositionOutput {
     private int positionOnTheList;
     private String approximateTimeLeft;
 
-    public CustomerPositionOutput(Appointment appointment, List<Appointment> appointmentList) {
+    public AppointmentInfoOutput(Appointment appointment, List<Appointment> appointmentList) {
         this.appointmentId = appointment.getAppointmentId();
         this.specialist = appointment.getSpecialist();
         AppointmentStatus appointmentStatus = appointment.getStatus();

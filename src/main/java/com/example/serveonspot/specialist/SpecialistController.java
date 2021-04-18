@@ -1,9 +1,11 @@
-package com.example.serveonspot.controllers;
+package com.example.serveonspot.specialist;
 
-import com.example.serveonspot.entities.Specialist;
-import com.example.serveonspot.services.AppointmentService;
+import com.example.serveonspot.appointment.AppointmentService;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
@@ -21,8 +23,8 @@ public class SpecialistController {
     }
 
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    Flux<List<Specialist>> getAllSpecialists() {
+    Flux<List<Specialist>> watchSpecialists() {
         return Flux.interval(Duration.ofSeconds(2))
-                .map(call  -> appointmentService.watchWorkingSpecialists());
+                .map(call -> appointmentService.getSpecialists());
     }
 }

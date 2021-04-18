@@ -1,10 +1,7 @@
-package com.example.serveonspot.repositories;
+package com.example.serveonspot.specialist;
 
-import com.example.serveonspot.entities.Specialist;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface SpecialistRepository extends JpaRepository<Specialist, Integer> {

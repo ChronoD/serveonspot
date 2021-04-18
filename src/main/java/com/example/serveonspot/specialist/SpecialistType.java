@@ -1,4 +1,4 @@
-package com.example.serveonspot.dtos;
+package com.example.serveonspot.specialist;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -9,9 +9,9 @@ public enum SpecialistType {
     FIVE_MINUTES(5),
     @JsonProperty("9 minučių")
     NINE_MINUTES(9);
-    private int minutes;
+    private final int minutes;
 
-    private SpecialistType(int minutes) {
+    SpecialistType(int minutes) {
         this.minutes = minutes;
     }
 
