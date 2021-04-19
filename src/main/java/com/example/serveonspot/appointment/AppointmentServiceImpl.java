@@ -5,11 +5,8 @@ import com.example.serveonspot.configuration.exceptions.SpecialistException;
 import com.example.serveonspot.specialist.Specialist;
 import com.example.serveonspot.specialist.SpecialistInfoOutput;
 import com.example.serveonspot.specialist.SpecialistRepository;
-import com.example.serveonspot.user.AppUser;
 import com.example.serveonspot.user.AppUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,18 +27,14 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<AppointmentInfoOutput> getOngoingAppointmentsByUserRole(AppUser appUser) {
+    public List<AppointmentInfoOutput> getOngoingAppointmentsBySpecialist(Specialist specialist) {
+        Integer specialistId = specialist.getSpecialistId();
+        return getOngoingAppointmentsBySpecialist(specialistId);
+    }
 
-        String appUserAuthority = appUser.getAuthority();
-        switch (appUserAuthority) {
-            case "ADMIN":
-                return getOngoingAppointmentsWithStartedFirstAndFiveWaiting(5);
-            case "SPECIALIST":
-                Integer specialistId = appUser.getSpecialist().getSpecialistId();
-                return getOngoingAppointmentsBySpecialist(specialistId);
-            default:
-                throw new RuntimeException("No such authority");
-        }
+    @Override
+    public List<AppointmentInfoOutput> getOngoingAppointmentsByAdminRole() {
+        return getOngoingAppointmentsWithStartedFirstAndFiveWaiting(5);
     }
 
     @Override
@@ -79,10 +72,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    @PreAuthorize("hasRole('SPECIALIST')")
     public AppointmentInfoOutput startAnAppointment(Integer appointmentId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        AppUser appUser = appUserService.loadAppUserByUsername(authentication.getName());
         Appointment appointment = getOngoingAppointmentById(appointmentId);
         appointment.start();
         Appointment updated = appointmentRepository.save(appointment);

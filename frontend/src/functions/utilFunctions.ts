@@ -19,3 +19,16 @@ export function colorByAppointmentStatus(status: AppointmentStatus): string {
       return "green";
   }
 }
+
+export function specialistTypeInfoBySpecialistType(type: string): string {
+  switch (type) {
+    case "ONE_MINUTE":
+      return "1 min. specialistas";
+    case "FIVE_MINUTES":
+      return "5 min. specialistas";
+    case "NINE_MINUTES":
+      return "9 min. specialistas";
+    default:
+      return "";
+  }
+}

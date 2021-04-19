@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.Optional;
 
 @RestController
 @RequestMapping
@@ -20,9 +21,12 @@ public class UserController {
         this.appUserService = appUserService;
     }
 
-    @GetMapping("/user")    
+    @GetMapping("/user")
     public ResponseEntity<AppUser> reg(Principal principal) {
-        AppUser appUser = appUserService.loadAppUserByUsername(principal.getName());
-        return new ResponseEntity<>(appUser, HttpStatus.OK);
+        Optional<AppUser> appUserOptional = appUserService.loadAppUserByUsername(principal.getName());
+        if (appUserOptional.isPresent()) {
+            return new ResponseEntity<>(appUserOptional.get(), HttpStatus.OK);
+        }
+        throw new RuntimeException("Bad credentials");
     }
 }

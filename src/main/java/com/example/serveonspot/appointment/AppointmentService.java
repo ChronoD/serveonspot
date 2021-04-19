@@ -8,7 +8,9 @@ import java.util.List;
 
 public interface AppointmentService {
 
-    List<AppointmentInfoOutput> getOngoingAppointmentsByUserRole(AppUser appUser);
+    List<AppointmentInfoOutput> getOngoingAppointmentsBySpecialist(Specialist specialist);
+
+    List<AppointmentInfoOutput> getOngoingAppointmentsByAdminRole();
 
     List<SpecialistInfoOutput> getSpecialists();
 

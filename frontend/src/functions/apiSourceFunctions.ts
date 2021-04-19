@@ -1,8 +1,8 @@
-import { AppointmentInfo, Specialist } from "../state/dataTypes";
+import { AppointmentInfo, SpecialistInfo } from "../state/dataTypes";
 import { EventSourcePolyfill } from "event-source-polyfill";
 
 export function initializeCustomerSpecialistsSource(
-  onSuccess: (specialists: Specialist[]) => void,
+  onSuccess: (specialists: SpecialistInfo[]) => void,
   onError: (error: Error) => void
 ): EventSource {
   const specialistsSource = new EventSource(

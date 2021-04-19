@@ -1,6 +1,6 @@
 import { Button, List, Card } from "antd";
 import Modal from "antd/lib/modal/Modal";
-import { Specialist } from "../../state/dataTypes";
+import { SpecialistInfo } from "../../state/dataTypes";
 
 interface Props {
   registerAppointment: (specialistId: number) => void;
@@ -10,7 +10,7 @@ interface Props {
   closeRegisteringError: () => void;
   loadingSpecialists: boolean;
   loadingSpecialistsError: Error | undefined;
-  specialists: Specialist[];
+  specialists: SpecialistInfo[];
 }
 
 export function CustomerSpecialists({

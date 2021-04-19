@@ -19,12 +19,15 @@ public class AppUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+
     private String username;
+
     @JsonIgnore
     private String password;
-    private String authority;
-    private String role;
 
+    private String authority;
+
+    private String role;
 
     @OneToOne(optional = true, cascade = CascadeType.ALL)
     private Specialist specialist;

@@ -1,6 +1,7 @@
 import { Button } from "antd";
 import { UserInfo } from "../../state/dataTypes";
 import { Col, Row } from "antd";
+import { specialistTypeInfoBySpecialistType } from "../../functions/utilFunctions";
 
 interface Props {
   userInfo: UserInfo;
@@ -21,8 +22,10 @@ export function StaffUserInfo({ userInfo, logout }: Props) {
           <Row justify="end" align="middle">
             <div>
               {userInfo.specialist !== null
-                ? userInfo.specialist.specialistType
-                : userInfo.authority}
+                ? specialistTypeInfoBySpecialistType(
+                    userInfo.specialist.specialistType
+                  )
+                : userInfo.authority.toLowerCase()}
             </div>
           </Row>
         </Col>

@@ -16,7 +16,7 @@ import {
   initCustomerAppointmentSource,
   initializeCustomerSpecialistsSource,
 } from "../functions/apiSourceFunctions";
-import { AppointmentInfo, Specialist } from "../state/dataTypes";
+import { AppointmentInfo, SpecialistInfo } from "../state/dataTypes";
 import { AppointmentInformation } from "../components/customer/AppointmentInformation";
 import { CustomerSpecialists } from "../components/customer/SpecialistsList";
 import { Col, Row } from "antd";
@@ -36,7 +36,7 @@ export function CustomerPanel() {
 
   const dispatch = useDispatch();
 
-  function watchSpecialistsSuccess(specialists: Specialist[]) {
+  function watchSpecialistsSuccess(specialists: SpecialistInfo[]) {
     dispatch(specialistsSuccess(specialists));
   }
 

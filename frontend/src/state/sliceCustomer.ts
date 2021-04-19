@@ -1,12 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AppointmentInfo, Specialist } from "./dataTypes";
-import { setUpdatingAppointmentId } from "./sliceStaff";
+import { AppointmentInfo, SpecialistInfo } from "./dataTypes";
 import type { AppDispatch, RootState } from "./store";
 
 export interface CustomerState {
   gettingSpecialists: boolean;
   gettingSpecialistsError: Error | undefined;
-  specialists: Specialist[] | undefined;
+  specialists: SpecialistInfo[] | undefined;
   postingAppointment: boolean;
   registeringSpecialistId: number | undefined;
   appointmentError: Error | undefined;
@@ -74,7 +73,7 @@ export const customerSlice = createSlice({
     gettingSpecialists: (state) => {
       state.gettingSpecialists = true;
     },
-    specialistsSuccess: (state, action: PayloadAction<Specialist[]>) => {
+    specialistsSuccess: (state, action: PayloadAction<SpecialistInfo[]>) => {
       state.gettingSpecialists = false;
       state.specialists = action.payload;
     },

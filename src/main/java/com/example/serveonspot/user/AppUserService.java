@@ -28,15 +28,10 @@ public class AppUserService implements UserDetailsService {
                     .authorities(user.getAuthority())
                     .build();
         }
-        throw new UsernameNotFoundException("username not found");
+        throw new UsernameNotFoundException("User not found");
     }
 
-    public AppUser loadAppUserByUsername(String username) throws UsernameNotFoundException {
-
-        Optional<AppUser> userOptional = appUserRepository.findByUsername(username);
-        if (userOptional.isPresent()) {
-            return userOptional.get();
-        }
-        throw new UsernameNotFoundException("User not found");
+    public Optional<AppUser> loadAppUserByUsername(String username) throws UsernameNotFoundException {
+        return appUserRepository.findByUsername(username);
     }
 }

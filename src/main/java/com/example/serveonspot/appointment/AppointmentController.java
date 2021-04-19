@@ -15,6 +15,7 @@ import reactor.core.publisher.Flux;
 import javax.validation.Valid;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*")
@@ -33,9 +34,23 @@ public class AppointmentController {
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<List<AppointmentInfoOutput>> trackOngoingAppointments() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        AppUser appUser = appUserService.loadAppUserByUsername(authentication.getName());
-        return Flux.interval(Duration.ofSeconds(5))
-                .map(sequence -> appointmentService.getOngoingAppointmentsByUserRole(appUser));
+        Optional<AppUser> userOptional = appUserService.loadAppUserByUsername(authentication.getName());
+
+        if (!userOptional.isPresent()) {
+            throw new RuntimeException("Not authorized");
+        }
+        AppUser user = userOptional.get();
+        String appUserAuthority = user.getAuthority();
+        switch (appUserAuthority) {
+            case "ADMIN":
+                return Flux.interval(Duration.ofSeconds(5))
+                        .map(sequence -> appointmentService.getOngoingAppointmentsByAdminRole());
+            case "SPECIALIST":
+                return Flux.interval(Duration.ofSeconds(5))
+                        .map(sequence -> appointmentService.getOngoingAppointmentsBySpecialist(user.getSpecialist()));
+            default:
+                throw new RuntimeException("Not authorized");
+        }
     }
 
     @PostMapping
@@ -51,32 +66,48 @@ public class AppointmentController {
     }
 
 
-
     @PatchMapping(value = "/{appointmentId}")
     public ResponseEntity<AppointmentInfoOutput> startServingCustomer(@PathVariable(value = "appointmentId") int appointmentId, @RequestBody @Valid AppointmentStatusInput status) {
+
         AppointmentStatus updateOperation = status.getStatus();
-        AppointmentInfoOutput  a =null;
+        AppointmentInfoOutput appointmentInfo = null;
         switch (updateOperation) {
             case UNREGISTERED:
-                a = appointmentService.unregisterAnAppointment(appointmentId);
+                appointmentInfo = appointmentService.unregisterAnAppointment(appointmentId);
                 break;
 
             case STARTED:
-                a = appointmentService.startAnAppointment(appointmentId);
+                authorizeSpecialistRole();
+                appointmentInfo = appointmentService.startAnAppointment(appointmentId);
                 break;
 
             case FINISHED:
-                a =  appointmentService.finishAnAppointment(appointmentId);
+                authorizeSpecialistRole();
+                appointmentInfo = appointmentService.finishAnAppointment(appointmentId);
                 break;
 
             case CANCELLED:
-                a = appointmentService.cancelAnAppointment(appointmentId);
+                authorizeSpecialistRole();
+                appointmentInfo = appointmentService.cancelAnAppointment(appointmentId);
                 break;
 
             default:
                 throw new AppointmentStatusException("No such status allowed");
         }
-        return new ResponseEntity<>(a,HttpStatus.OK);
+        return new ResponseEntity<>(appointmentInfo, HttpStatus.OK);
+    }
+
+    private void authorizeSpecialistRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Optional<AppUser> appUserOptional = appUserService.loadAppUserByUsername(authentication.getName());
+        if (appUserOptional.isPresent()) {
+            AppUser user = appUserOptional.get();
+            if (!user.getAuthority().equals("SPECIALIST")) {
+                throw new RuntimeException("Not authorized");
+            }
+        } else {
+            throw new RuntimeException("Not authorized");
+        }
     }
 
 }

@@ -1,4 +1,4 @@
-export interface Specialist {
+export interface SpecialistInfo {
   specialistId: number;
   specialistType: string;
 }
@@ -6,7 +6,7 @@ export interface Specialist {
 export interface AppointmentInfo {
   appointmentId: number;
   status: AppointmentStatus;
-  specialist: Specialist;
+  specialist: SpecialistInfo;
   positionOnTheList: number;
   approximateTimeLeft: string;
 }
@@ -28,5 +28,5 @@ export interface UserInfo {
   username: string;
   password: string;
   authority: string;
-  specialist: Specialist;
+  specialist: SpecialistInfo;
 }
