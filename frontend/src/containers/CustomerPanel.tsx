@@ -95,7 +95,6 @@ export function CustomerPanel() {
       appointmentSource = initCustomerAppointmentSource(
         appointmentInfo.appointmentId,
         watchAppointmentInfo
-        // watchAppointmentInfoError
       );
       return () => {
         appointmentSource && appointmentSource.close();

@@ -17,14 +17,8 @@ public class Specialist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int specialistId;
     private SpecialistType specialistType;
-    private String specialistInfo;
 
     public Specialist(SpecialistType type) {
-        this.specialistInfo = generateSpecialistInfo(type);
         this.specialistType = type;
-    }
-
-    private String generateSpecialistInfo(SpecialistType type) {
-        return type + " min. specialistas";
     }
 }

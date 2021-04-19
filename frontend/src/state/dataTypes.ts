@@ -1,21 +1,6 @@
-// export interface Appointment {
-//   appointmentId: number;
-//   specialist: Specialist;
-//   status: AppointmentStatus;
-// }
-
-export type AppointmentStatus =
-  | "REGISTERED"
-  | "UNREGISTERED"
-  | "STARTED"
-  | "FINISHED"
-  | "CANCELLED";
-
 export interface Specialist {
   specialistId: number;
   specialistType: string;
-  specialistInfo: string;
-  working: boolean;
 }
 
 export interface AppointmentInfo {
@@ -24,8 +9,14 @@ export interface AppointmentInfo {
   specialist: Specialist;
   positionOnTheList: number;
   approximateTimeLeft: string;
-  message: string;
 }
+
+export type AppointmentStatus =
+  | "REGISTERED"
+  | "UNREGISTERED"
+  | "STARTED"
+  | "FINISHED"
+  | "CANCELLED";
 
 export interface LoginDetails {
   username: string;

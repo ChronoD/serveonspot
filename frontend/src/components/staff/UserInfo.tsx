@@ -21,7 +21,7 @@ export function StaffUserInfo({ userInfo, logout }: Props) {
           <Row justify="end" align="middle">
             <div>
               {userInfo.specialist !== null
-                ? userInfo.specialist.specialistInfo
+                ? userInfo.specialist.specialistType
                 : userInfo.authority}
             </div>
           </Row>

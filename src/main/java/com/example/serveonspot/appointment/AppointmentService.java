@@ -1,6 +1,7 @@
 package com.example.serveonspot.appointment;
 
 import com.example.serveonspot.specialist.Specialist;
+import com.example.serveonspot.specialist.SpecialistInfoOutput;
 import com.example.serveonspot.user.AppUser;
 
 import java.util.List;
@@ -9,7 +10,7 @@ public interface AppointmentService {
 
     List<AppointmentInfoOutput> getOngoingAppointmentsByUserRole(AppUser appUser);
 
-    List<Specialist> getSpecialists();
+    List<SpecialistInfoOutput> getSpecialists();
 
     AppointmentInfoOutput registerAnAppointment(Integer specialistId);
 

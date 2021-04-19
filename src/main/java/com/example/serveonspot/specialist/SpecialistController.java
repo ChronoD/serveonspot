@@ -23,7 +23,7 @@ public class SpecialistController {
     }
 
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    Flux<List<Specialist>> watchSpecialists() {
+    Flux<List<SpecialistInfoOutput>> watchSpecialists() {
         return Flux.interval(Duration.ofSeconds(2))
                 .map(call -> appointmentService.getSpecialists());
     }

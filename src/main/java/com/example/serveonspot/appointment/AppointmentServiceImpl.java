@@ -3,6 +3,7 @@ package com.example.serveonspot.appointment;
 import com.example.serveonspot.configuration.exceptions.AppointmentException;
 import com.example.serveonspot.configuration.exceptions.SpecialistException;
 import com.example.serveonspot.specialist.Specialist;
+import com.example.serveonspot.specialist.SpecialistInfoOutput;
 import com.example.serveonspot.specialist.SpecialistRepository;
 import com.example.serveonspot.user.AppUser;
 import com.example.serveonspot.user.AppUserService;
@@ -44,8 +45,10 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<Specialist> getSpecialists() {
-        return specialistRepository.findAll();
+    public List<SpecialistInfoOutput> getSpecialists() {
+        return specialistRepository.findAll().stream()
+                .map(s -> new SpecialistInfoOutput(s))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -69,8 +72,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     public AppointmentInfoOutput unregisterAnAppointment(Integer appointmentId) {
         Appointment appointment = getOngoingAppointmentById(appointmentId);
         appointment.unregister();
-        Appointment updated =  appointmentRepository.save(appointment);
-       List<Appointment> allAppointments = getOngoingAppointmentsWithStartedFirstOfSpecialist(updated.getSpecialist().getSpecialistId());
+        Appointment updated = appointmentRepository.save(appointment);
+        List<Appointment> allAppointments = getOngoingAppointmentsWithStartedFirstOfSpecialist(updated.getSpecialist().getSpecialistId());
 
         return new AppointmentInfoOutput(updated, allAppointments);
     }
@@ -82,7 +85,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         AppUser appUser = appUserService.loadAppUserByUsername(authentication.getName());
         Appointment appointment = getOngoingAppointmentById(appointmentId);
         appointment.start();
-        Appointment updated =   appointmentRepository.save(appointment);
+        Appointment updated = appointmentRepository.save(appointment);
         List<Appointment> allAppointments = getOngoingAppointmentsWithStartedFirstOfSpecialist(updated.getSpecialist().getSpecialistId());
 
         return new AppointmentInfoOutput(updated, allAppointments);
@@ -93,7 +96,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     public AppointmentInfoOutput finishAnAppointment(Integer appointmentId) {
         Appointment appointment = getOngoingAppointmentById(appointmentId);
         appointment.finish();
-        Appointment updated =     appointmentRepository.save(appointment);
+        Appointment updated = appointmentRepository.save(appointment);
         List<Appointment> allAppointments = getOngoingAppointmentsWithStartedFirstOfSpecialist(updated.getSpecialist().getSpecialistId());
 
         return new AppointmentInfoOutput(updated, allAppointments);
@@ -104,7 +107,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     public AppointmentInfoOutput cancelAnAppointment(Integer appointmentId) {
         Appointment appointment = getOngoingAppointmentById(appointmentId);
         appointment.cancel();
-        Appointment updated =   appointmentRepository.save(appointment);
+        Appointment updated = appointmentRepository.save(appointment);
         List<Appointment> allAppointments = getOngoingAppointmentsWithStartedFirstOfSpecialist(updated.getSpecialist().getSpecialistId());
 
         return new AppointmentInfoOutput(updated, allAppointments);
@@ -119,7 +122,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         return appointmentList.stream()
                 .filter(a -> a.getSpecialist().getSpecialistId() == specialistId)
-                .map(a -> new AppointmentInfoOutput(a,appointmentList))
+                .map(a -> new AppointmentInfoOutput(a, appointmentList))
                 .collect(Collectors.toList());
     }
 
@@ -134,7 +137,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .limit(waitingLineLength)
                 .collect(Collectors.toList());
 
-        List<Appointment> allAppointments= Stream.concat(allStarted.stream(), registeredByLimit.stream()).collect(Collectors.toList());
+        List<Appointment> allAppointments = Stream.concat(allStarted.stream(), registeredByLimit.stream()).collect(Collectors.toList());
         return allAppointments.stream()
                 .map(a -> new AppointmentInfoOutput(a, allAppointments))
                 .collect(Collectors.toList());

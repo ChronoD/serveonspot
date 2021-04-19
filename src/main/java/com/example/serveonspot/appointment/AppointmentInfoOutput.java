@@ -31,7 +31,7 @@ public class AppointmentInfoOutput {
     }
 
     private int getPositionOnTheList(Appointment appointment, List<Appointment> appointmentList) {
-        return appointmentList.indexOf(appointment);
+        return appointmentList.indexOf(appointment)+1;
     }
 
     private String getMessageByPositionOnList(List<Appointment> appointmentList) {
@@ -46,7 +46,7 @@ public class AppointmentInfoOutput {
                 Duration d = Duration.ofMinutes(specialistType.getMinutes() * position);
                 return "Iki vizito liko apie " + d.toMinutes() + " min.";
             case UNREGISTERED:
-                return "Vizitas buvo atšauktas";
+                return "Vizitas atšauktas";
             case STARTED:
                 return "Vizitas prasidėjo";
             case FINISHED:

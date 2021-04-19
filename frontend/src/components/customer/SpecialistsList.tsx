@@ -41,7 +41,7 @@ export function CustomerSpecialists({
               dataSource={specialists}
               renderItem={(spec) => (
                 <List.Item>
-                  <Card title={spec.specialistInfo}>
+                  <Card title={spec.specialistType}>
                     <Button
                       type="primary"
                       onClick={() => registerAppointment(spec.specialistId)}

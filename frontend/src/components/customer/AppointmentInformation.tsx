@@ -22,7 +22,6 @@ export function AppointmentInformation({
 }: Props) {
   const {
     positionOnTheList,
-    message,
     specialist,
     status,
     approximateTimeLeft,
@@ -39,15 +38,16 @@ export function AppointmentInformation({
         <p>Įvyko klaida, pabandykite vėliau</p>
       </Modal>
       <Card
-        title={`${specialist.specialistInfo}`}
+        title={`${specialist.specialistType} specialistas`}
         style={{
           width: 300,
           border: `5px solid ${borderColor}`,
         }}
       >
         <>
-          Informacija:
-          <p>{message}</p>
+          <p>{`Jūsų numeriukas: ${appointmentInfo.appointmentId}`}</p>
+
+          <p>{`Vieta eilėje: ${positionOnTheList}`}</p>
           <p>{approximateTimeLeft}</p>
         </>
         {status === "REGISTERED" && (
