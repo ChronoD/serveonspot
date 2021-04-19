@@ -12,7 +12,7 @@ import java.time.Duration;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/specialists")
+@RequestMapping(value = "/api/specialists")
 @CrossOrigin(allowedHeaders = "*")
 public class SpecialistController {
 

@@ -11,7 +11,7 @@ import java.security.Principal;
 import java.util.Optional;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api/user")
 @CrossOrigin(allowedHeaders = "*")
 public class UserController {
 
@@ -21,7 +21,7 @@ public class UserController {
         this.appUserService = appUserService;
     }
 
-    @GetMapping("/user")
+    @GetMapping
     public ResponseEntity<AppUser> reg(Principal principal) {
         Optional<AppUser> appUserOptional = appUserService.loadAppUserByUsername(principal.getName());
         if (appUserOptional.isPresent()) {

@@ -32,7 +32,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public AppointmentInfoOutput registerAnAppointment(Integer specialistId) {
-        Specialist specialist = getWorkingSpecialistById(specialistId);
+        Specialist specialist = getSpecialistById(specialistId);
         Appointment appointment = appointmentRepository.save(new Appointment(specialist));
         List<Appointment> allAppointments = getOngoingAppointmentsBySpecialist(specialistId);
 
@@ -66,6 +66,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public AppointmentInfoOutput startAnAppointment(Integer appointmentId) {
         Appointment appointment = getOngoingAppointmentById(appointmentId);
+        validateAppointmentOrder(appointment);
         appointment.start();
         Appointment updated = appointmentRepository.save(appointment);
         List<Appointment> allAppointments = getOngoingAppointmentsBySpecialist(updated.getSpecialist().getSpecialistId());
@@ -76,6 +77,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public AppointmentInfoOutput finishAnAppointment(Integer appointmentId) {
         Appointment appointment = getOngoingAppointmentById(appointmentId);
+        validateAppointmentOrder(appointment);
         appointment.finish();
         Appointment updated = appointmentRepository.save(appointment);
         List<Appointment> allAppointments = getOngoingAppointmentsBySpecialist(updated.getSpecialist().getSpecialistId());
@@ -86,6 +88,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public AppointmentInfoOutput cancelAnAppointment(Integer appointmentId) {
         Appointment appointment = getOngoingAppointmentById(appointmentId);
+        validateAppointmentOrder(appointment);
         appointment.cancel();
         Appointment updated = appointmentRepository.save(appointment);
         List<Appointment> allAppointments = getOngoingAppointmentsBySpecialist(updated.getSpecialist().getSpecialistId());
@@ -108,6 +111,14 @@ public class AppointmentServiceImpl implements AppointmentService {
         return mapToAppointmentInfo(allAppointments);
     }
 
+
+    private void validateAppointmentOrder(Appointment appointment) {
+        List<Appointment> ongoingAppointments = getOngoingAppointmentsBySpecialist(appointment.getSpecialist().getSpecialistId());
+        int appointmentIndex = ongoingAppointments.indexOf(appointment);
+        if (appointmentIndex != 0) {
+            throw new AppointmentException("Appointments must be served in order");
+        }
+    }
 
     private List<Appointment> getOngoingAppointmentsBySpecialist(Integer specialistId) {
         List<Appointment> specialistsAppointments = specialistsAppointments(specialistId);
@@ -147,7 +158,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         throw new AppointmentException("No such ongoing appointment");
     }
 
-    private Specialist getWorkingSpecialistById(Integer specialistId) throws RuntimeException {
+    private Specialist getSpecialistById(Integer specialistId) throws SpecialistException {
         Optional<Specialist> specialistOptional = specialistRepository.findById(specialistId);
         if (specialistOptional.isPresent()) {
             return specialistOptional.get();

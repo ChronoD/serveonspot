@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*")
-@RequestMapping(value = "/appointments")
+@RequestMapping(value = "/api/appointments")
 public class AppointmentController {
 
     private final AppointmentService appointmentService;

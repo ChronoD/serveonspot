@@ -35,7 +35,7 @@ export const registerWithSpecialistApi = createAsyncThunk<
   }
 >("customer/register", async (specialistId: number, thunkApi: any) => {
   thunkApi.dispatch(setRegisteringSpecialistId(specialistId));
-  const response = await fetch(`http://localhost:8080/appointments`, {
+  const response = await fetch(`http://localhost:8080/api/appointments`, {
     method: "POST",
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -52,7 +52,7 @@ export const unregisterWithSpecialistApi = createAsyncThunk<
   number
 >("customer/unregisterAppointment", async (appointmentId: number) => {
   const response = await fetch(
-    `http://localhost:8080/appointments/${appointmentId}`,
+    `http://localhost:8080/api/appointments/${appointmentId}`,
     {
       method: "PATCH",
       headers: {

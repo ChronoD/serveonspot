@@ -1,10 +1,7 @@
 package com.example.serveonspot.configuration;
 
 
-import com.example.serveonspot.configuration.exceptions.AppointmentException;
-import com.example.serveonspot.configuration.exceptions.AppointmentStatusException;
-import com.example.serveonspot.configuration.exceptions.ErrorDto;
-import com.example.serveonspot.configuration.exceptions.SpecialistException;
+import com.example.serveonspot.configuration.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -28,6 +25,12 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(SpecialistException.class)
     public ResponseEntity<ErrorDto> handleSpecialistException(SpecialistException ex) {
+        ErrorDto errorDto = ErrorDto.builder().message(ex.getMessage()).build();
+        return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AppUserException.class)
+    public ResponseEntity<ErrorDto> handleAppUserException(AppUserException ex) {
         ErrorDto errorDto = ErrorDto.builder().message(ex.getMessage()).build();
         return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
