@@ -4,26 +4,24 @@ import { useAppSelector } from "../state/hooks";
 import {
   specialistsSuccess,
   specialistsError,
-  postingAppointmentError,
-  postingAppointmentSuccess,
-  unregisteringSuccess,
-  unregisteringError,
+  resetRegisteringError,
   resetCustomerState,
   registerWithSpecialistThunk,
+  unregisterWithSpecialistThunk,
+  watchAppointmentSuccess,
+  watchAppointmentError,
+  resetUnregisteringError,
 } from "../state/sliceCustomer";
 import {
-  initializeSpecialistsSource,
-  initializeWatchedAppointmentSource,
-  registerAppointment,
-  unregisterAppointment,
-} from "../functions/apiFunctions";
+  initCustomerAppointmentSource,
+  initializeCustomerSpecialistsSource,
+} from "../functions/apiSourceFunctions";
 import { AppointmentInfo, Specialist } from "../state/dataTypes";
-import { CustomerAppointment } from "../components/CustomerAppointment";
-import { CustomerSpecialists } from "../components/CustomerSpecialists";
+import { AppointmentInformation } from "../components/customer/AppointmentInformation";
+import { CustomerSpecialists } from "../components/customer/SpecialistsList";
+import { Col, Row } from "antd";
 
-interface Props {}
-
-export function CustomerPanel({}: Props) {
+export function CustomerPanel() {
   const {
     gettingSpecialists,
     gettingSpecialistsError,
@@ -37,104 +35,103 @@ export function CustomerPanel({}: Props) {
 
   const dispatch = useDispatch();
 
-  // function registerWithSpecialist(specialistId: number) {
-  //   registerAppointment(
-  //     specialistId,
-  //     (appointmentInfo: AppointmentInfo) =>
-  //       dispatch(postingAppointmentSuccess(appointmentInfo)),
-  //     (error: Error) => dispatch(postingAppointmentError(error))
-  //   );
-  // }
+  function watchSpecialistsSuccess(specialists: Specialist[]) {
+    dispatch(specialistsSuccess(specialists));
+  }
+
+  function watchSpecialistsError(error: Error) {
+    dispatch(specialistsError(error));
+  }
 
   function registerWithSpecialist(specialistId: number) {
     dispatch(registerWithSpecialistThunk(specialistId));
   }
 
-  function trackAppointmentSuccess(appointmentInfo: AppointmentInfo) {
-    dispatch(postingAppointmentSuccess(appointmentInfo));
-    closeSpecs();
+  function closeRegisteringError() {
+    dispatch(resetRegisteringError());
+  }
+
+  function watchAppointmentInfo(appointmentInfo: AppointmentInfo) {
+    dispatch(watchAppointmentSuccess(appointmentInfo));
+  }
+
+  function watchAppointmentInfoError(error: Error) {
+    dispatch(watchAppointmentError(error));
+  }
+
+  function unregister(appointmentId: number) {
+    dispatch(unregisterWithSpecialistThunk(appointmentId));
+  }
+
+  function closeUnregisteringError() {
+    dispatch(resetUnregisteringError());
+  }
+
+  function returnToCustomerMenu() {
+    dispatch(resetCustomerState());
   }
 
   let specialistsSource: EventSource | null = null;
 
-  function closeSpecs() {
-    specialistsSource && specialistsSource.close();
-  }
-
-  function closeAppointment() {
-    appointmentSource && appointmentSource.close();
-  }
-
   useEffect(() => {
     if (!appointmentInfo) {
-      specialistsSource = initializeSpecialistsSource(
-        (specialists: Specialist[]) =>
-          dispatch(specialistsSuccess(specialists)),
-        (error: Error) => dispatch(specialistsError(error))
-      );
-      specialistsSource.addEventListener("close", () =>
-        specialistsSource?.close()
+      specialistsSource = initializeCustomerSpecialistsSource(
+        watchSpecialistsSuccess,
+        watchSpecialistsError
       );
     } else {
-      closeSpecs();
+      specialistsSource && specialistsSource.close();
     }
     return () => {
-      closeSpecs();
+      specialistsSource && specialistsSource.close();
     };
   }, [appointmentInfo]);
-
-  function unregister(appointmentId: number) {
-    // dispatch(unregisteringAppointment);
-    unregisterAppointment(
-      appointmentId,
-      () => dispatch(unregisteringSuccess()),
-      (error: Error) => dispatch(unregisteringError(error))
-    );
-  }
 
   let appointmentSource: EventSource | null = null;
 
   useEffect(() => {
     if (appointmentInfo) {
-      appointmentSource = initializeWatchedAppointmentSource(
+      appointmentSource = initCustomerAppointmentSource(
         appointmentInfo.appointmentId,
-        trackAppointmentSuccess
+        watchAppointmentInfo
+        // watchAppointmentInfoError
       );
-
       return () => {
-        closeAppointment();
+        appointmentSource && appointmentSource.close();
       };
     }
   }, [appointmentInfo]);
 
-  // useEffect(() => {
-  //   return () => {
-  //     closeAppointment();
-  //     closeSpecs();
-  //   };
-  // }, [appointmentInfo]);
-
   return (
     <div>
+      {!specialists && (
+        <Row>
+          <Col span={12} offset={6}>
+            Laukiama specialistų duomenų
+          </Col>
+        </Row>
+      )}
       {specialists && !appointmentInfo && (
         <CustomerSpecialists
           registerAppointment={registerWithSpecialist}
           registering={postingAppointment}
           registeringError={appointmentError}
+          closeRegisteringError={closeRegisteringError}
           loadingSpecialists={gettingSpecialists}
           loadingSpecialistsError={gettingSpecialistsError}
           specialists={specialists}
         />
       )}
       {appointmentInfo && (
-        <CustomerAppointment
+        <AppointmentInformation
           appointmentInfo={appointmentInfo}
           unregisterAppointment={() =>
             unregister(appointmentInfo.appointmentId)
           }
           unregistering={unregisteringAppointment}
           unregisteringError={unregisteringAppointmentError}
-          returnToMenu={() => dispatch(resetCustomerState())}
+          closeUnregisteringError={closeUnregisteringError}
+          returnToMenu={returnToCustomerMenu}
         />
       )}
     </div>

@@ -7,19 +7,19 @@ import java.util.List;
 
 public interface AppointmentService {
 
-    List<Appointment> getOngoingAppointmentsByUserRole(AppUser appUser);
+    List<AppointmentInfoOutput> getOngoingAppointmentsByUserRole(AppUser appUser);
 
     List<Specialist> getSpecialists();
 
     AppointmentInfoOutput registerAnAppointment(Integer specialistId);
 
-    void unregisterAnAppointment(Integer appointmentId);
+    AppointmentInfoOutput unregisterAnAppointment(Integer appointmentId);
 
     AppointmentInfoOutput getAnAppointment(Integer appointmentId);
 
-    void startAnAppointment(Integer appointmentId);
+    AppointmentInfoOutput startAnAppointment(Integer appointmentId);
 
-    void finishAnAppointment(Integer appointmentId);
+    AppointmentInfoOutput finishAnAppointment(Integer appointmentId);
 
-    void cancelAnAppointment(Integer appointmentId);
+    AppointmentInfoOutput cancelAnAppointment(Integer appointmentId);
 }

@@ -1,8 +1,8 @@
-export interface Appointment {
-  appointmentId: number;
-  specialist: Specialist;
-  status: AppointmentStatus;
-}
+// export interface Appointment {
+//   appointmentId: number;
+//   specialist: Specialist;
+//   status: AppointmentStatus;
+// }
 
 export type AppointmentStatus =
   | "REGISTERED"

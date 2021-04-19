@@ -1,5 +1,5 @@
 import { Button } from "antd";
-import { UserInfo } from "../state/dataTypes";
+import { UserInfo } from "../../state/dataTypes";
 import { Col, Row } from "antd";
 
 interface Props {

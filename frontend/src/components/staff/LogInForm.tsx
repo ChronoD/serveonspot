@@ -1,8 +1,11 @@
 import { Button, Col, Form, Input, Row } from "antd";
-import { LoginDetails } from "../state/dataTypes";
+import Modal from "antd/lib/modal/Modal";
+import { LoginDetails } from "../../state/dataTypes";
 
 interface Props {
   onSubmit: (values: LoginDetails) => void;
+  loginError: Error | undefined;
+  closeLoginError: () => void;
 }
 
 const layout = {
@@ -13,9 +16,12 @@ const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 };
 
-export function StaffLogIn({ onSubmit }: Props) {
+export function StaffLogIn({ onSubmit, loginError, closeLoginError }: Props) {
   return (
     <Row>
+      <Modal visible={!!loginError} onCancel={closeLoginError} footer={null}>
+        <p>Prisijungti nepavyko</p>
+      </Modal>
       <Form
         {...layout}
         name="basic"

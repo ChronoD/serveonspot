@@ -1,18 +1,22 @@
 import { Button, Card } from "antd";
-import { AppointmentInfo } from "../state/dataTypes";
+import Modal from "antd/lib/modal/Modal";
+import { AppointmentInfo } from "../../state/dataTypes";
 
 interface Props {
   appointmentInfo: AppointmentInfo;
   unregisterAppointment: () => void;
   unregistering: boolean;
   unregisteringError: Error | undefined;
+  closeUnregisteringError: () => void;
   returnToMenu: () => void;
 }
 
-export function CustomerAppointment({
+export function AppointmentInformation({
   appointmentInfo,
   unregisterAppointment,
   unregistering,
+  unregisteringError,
+  closeUnregisteringError,
   returnToMenu,
 }: Props) {
   const {
@@ -25,6 +29,13 @@ export function CustomerAppointment({
 
   return (
     <>
+      <Modal
+        visible={!!unregisteringError}
+        onCancel={closeUnregisteringError}
+        footer={null}
+      >
+        <p>Įvyko klaida, pabandykite vėliau</p>
+      </Modal>
       <Card
         title={`${specialist.specialistInfo}`}
         style={{
@@ -37,17 +48,18 @@ export function CustomerAppointment({
           <p>{message}</p>
           <p>{approximateTimeLeft}</p>
         </>
-        {status !== "FINISHED" && (
+        {status === "REGISTERED" && (
           <Button
             type="primary"
-            disabled={status !== "REGISTERED"}
             onClick={unregisterAppointment}
             loading={unregistering}
           >
             Atšaukti
           </Button>
         )}
-        {status === "FINISHED" && (
+        {(status === "UNREGISTERED" ||
+          status === "FINISHED" ||
+          status === "CANCELLED") && (
           <Button type="primary" onClick={returnToMenu}>
             Atgal
           </Button>

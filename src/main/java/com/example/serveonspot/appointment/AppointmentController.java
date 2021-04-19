@@ -31,7 +31,7 @@ public class AppointmentController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SPECIALIST')")
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<List<Appointment>> trackOngoingAppointments() {
+    public Flux<List<AppointmentInfoOutput>> trackOngoingAppointments() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AppUser appUser = appUserService.loadAppUserByUsername(authentication.getName());
         return Flux.interval(Duration.ofSeconds(5))
@@ -51,31 +51,32 @@ public class AppointmentController {
     }
 
 
-    @PatchMapping(value = "/{appointmentId}")
-    public ResponseEntity<Appointment> startServingCustomer(@PathVariable(value = "appointmentId") int appointmentId, @RequestBody @Valid AppointmentStatusInput status) {
-        AppointmentStatus updateOperation = status.getStatus();
 
+    @PatchMapping(value = "/{appointmentId}")
+    public ResponseEntity<AppointmentInfoOutput> startServingCustomer(@PathVariable(value = "appointmentId") int appointmentId, @RequestBody @Valid AppointmentStatusInput status) {
+        AppointmentStatus updateOperation = status.getStatus();
+        AppointmentInfoOutput  a =null;
         switch (updateOperation) {
             case UNREGISTERED:
-                appointmentService.unregisterAnAppointment(appointmentId);
+                a = appointmentService.unregisterAnAppointment(appointmentId);
                 break;
 
             case STARTED:
-                appointmentService.startAnAppointment(appointmentId);
+                a = appointmentService.startAnAppointment(appointmentId);
                 break;
 
             case FINISHED:
-                appointmentService.finishAnAppointment(appointmentId);
+                a =  appointmentService.finishAnAppointment(appointmentId);
                 break;
 
             case CANCELLED:
-                appointmentService.cancelAnAppointment(appointmentId);
+                a = appointmentService.cancelAnAppointment(appointmentId);
                 break;
 
             default:
                 throw new AppointmentStatusException("No such status allowed");
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(a,HttpStatus.OK);
     }
 
 }

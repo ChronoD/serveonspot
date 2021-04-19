@@ -1,15 +1,17 @@
 import { Button, Card, Col, List, Row } from "antd";
-import { Appointment, UserInfo } from "../state/dataTypes";
+import Modal from "antd/lib/modal/Modal";
+import { AppointmentInfo, UserInfo } from "../../state/dataTypes";
 
 interface Props {
   userInfo: UserInfo;
-  appointments: Appointment[] | undefined;
+  appointments: AppointmentInfo[] | undefined;
   appointmentsError?: Error;
   startAppointment: (appointmentId: number) => void;
   endAppointment: (appointmentId: number) => void;
   cancelAppointment: (appointmentId: number) => void;
   updating: boolean;
   updatingError: Error | undefined;
+  closeUpdatingError: () => void;
 }
 
 export function StaffAppointments({
@@ -21,14 +23,29 @@ export function StaffAppointments({
   cancelAppointment,
   updating,
   updatingError,
+  closeUpdatingError,
 }: Props) {
   const isAdmin = userInfo.authority === "ADMIN";
   return (
     <>
+      <Modal
+        visible={!!updatingError}
+        onCancel={closeUpdatingError}
+        footer={null}
+      >
+        <p>Įvyko klaida, bandykite vėliau</p>
+      </Modal>
       <Row>
-        <Col span={12} offset={6}>
-          {userInfo && !appointments ? "Laukiama vizitų duomenų" : "Vizitai"}
-        </Col>
+        {appointmentsError && (
+          <Col span={12} offset={6}>
+            Klaida gaunant vizitų duomenis, palaukite
+          </Col>
+        )}
+        {!appointmentsError && (
+          <Col span={12} offset={6}>
+            {userInfo && !appointments ? "Laukiama vizitų duomenų" : "Vizitai"}
+          </Col>
+        )}
       </Row>
       {appointments !== undefined && (
         <Row justify="center">

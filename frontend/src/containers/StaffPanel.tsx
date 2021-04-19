@@ -1,87 +1,95 @@
-import { Col, Row } from "antd";
+import { Col } from "antd";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { StaffAppointments } from "../components/StaffAppointments";
-import { StaffLogIn } from "../components/StaffLogIn";
-import { StaffUserInfo } from "../components/StaffUserInfo";
+import { useDispatch } from "react-redux";
+import { StaffAppointments } from "../components/staff/AppointmentsList";
+import { StaffLogIn } from "../components/staff/LogInForm";
+import { StaffUserInfo } from "../components/staff/UserInfo";
+import { initStaffAppointmentsSource } from "../functions/apiSourceFunctions";
 import {
-  authenticateStaffMember,
-  // cancelAxiosInterceptors,
-  initializeAppointmentsSource,
-  unregisterAppointment,
-  updateAppointmentStatus,
-} from "../functions/apiFunctions";
-import { Appointment, LoginDetails, UserInfo } from "../state/dataTypes";
+  AppointmentInfo,
+  AppointmentStatus,
+  LoginDetails,
+} from "../state/dataTypes";
 import { useAppSelector } from "../state/hooks";
 import {
-  selectAuthenticationHeader,
-  setAppointments,
-  setUserInfoAndAuthenticationHeader,
-  resetStaffState,
-  updateAppointmentError,
-  updateAppointmentSuccess,
+  setStaffAppointments,
+  logout,
+  changeAppointmentStatusThunk,
+  loginThunk,
+  resetLoginError,
+  resetUpdatingError,
+  setAppointmentsError,
 } from "../state/sliceStaff";
 
 interface Props {}
 
 export function StaffPanel({}: Props) {
-  const isAuthenticated = !!useSelector(selectAuthenticationHeader);
-
   const {
-    authenticationHeader,
+    authHeader,
     userInfo,
+    userInfoError,
     updatingAppointment,
     updatingAppointmentError,
-    updatedAppointment,
     appointments,
     appointmentsError,
   } = useAppSelector((state) => state.staff);
 
   const dispatch = useDispatch();
 
-  const setHeaderAndUserInfo = (userInfo: UserInfo, header: string) =>
-    dispatch(setUserInfoAndAuthenticationHeader({ userInfo, header }));
+  function login(values: LoginDetails) {
+    dispatch(loginThunk(values));
+  }
 
-  const logIn = (values: LoginDetails) => {
-    authenticateStaffMember(values, setHeaderAndUserInfo);
+  function closeLoginError() {
+    dispatch(resetLoginError());
+  }
+
+  const updateAppointment = (status: AppointmentStatus) => (
+    appointmentId: number
+  ) => {
+    dispatch(changeAppointmentStatusThunk({ appointmentId, status }));
   };
 
-  const updateAppointment = (status: string) => (appointmentId: number) => {
-    updateAppointmentStatus(
-      appointmentId,
-      status,
-      authenticationHeader || "",
-      (appointment: Appointment) =>
-        dispatch(updateAppointmentSuccess(appointment)),
-      (error: Error) => dispatch(updateAppointmentError(error))
-    );
-  };
+  function closeUpdatingAppointmentError() {
+    dispatch(resetUpdatingError());
+  }
+
+  function watchAppointmentsSuccess(appointments: AppointmentInfo[]) {
+    dispatch(setStaffAppointments(appointments));
+  }
+
+  function watchAppointmentsError(error: Error) {
+    dispatch(setAppointmentsError(error));
+  }
 
   function logOut(): void {
-    // cancelAxiosInterceptors();
-    dispatch(resetStaffState());
+    dispatch(logout());
   }
 
   let source: EventSource | null = null;
   useEffect(() => {
-    if (userInfo) {
-      source = initializeAppointmentsSource(
-        (appointments: Appointment[]) =>
-          dispatch(setAppointments(appointments)),
-        authenticationHeader
+    if (userInfo && authHeader) {
+      source = initStaffAppointmentsSource(
+        authHeader,
+        watchAppointmentsSuccess,
+        watchAppointmentsError
       );
     }
     return () => {
-      console.log("closing appmt");
-
       source && source.close();
     };
   }, [userInfo]);
 
   return (
     <>
-      {!isAuthenticated && <StaffLogIn onSubmit={logIn} />}
-      {isAuthenticated && (
+      {!authHeader && (
+        <StaffLogIn
+          onSubmit={login}
+          loginError={userInfoError}
+          closeLoginError={closeLoginError}
+        />
+      )}
+      {!!authHeader && (
         <Col span={24}>
           <Col span={24}>
             {userInfo && <StaffUserInfo userInfo={userInfo} logout={logOut} />}
@@ -95,7 +103,8 @@ export function StaffPanel({}: Props) {
               endAppointment={updateAppointment("FINISHED")}
               cancelAppointment={updateAppointment("CANCELLED")}
               updating={updatingAppointment}
-              updatingError={appointmentsError}
+              updatingError={updatingAppointmentError}
+              closeUpdatingError={closeUpdatingAppointmentError}
             />
           )}
         </Col>

@@ -1,22 +1,30 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Appointment, UserInfo } from "./dataTypes";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createBasicAuthToken } from "../functions/utilFunctions";
+import {
+  AppointmentInfo,
+  AppointmentStatus,
+  LoginDetails,
+  UserInfo,
+} from "./dataTypes";
 import type { RootState } from "./store";
 
-// Define a type for the slice state
 export interface StaffState {
-  authenticationHeader: string | undefined;
+  gettingUserInfo: boolean;
   userInfo: UserInfo | undefined;
+  authHeader: string | undefined;
+  userInfoError: Error | undefined;
   updatingAppointment: boolean;
   updatingAppointmentError: Error | undefined;
-  updatedAppointment: Appointment | undefined;
-  appointments: Appointment[] | undefined;
+  updatedAppointment: AppointmentInfo | undefined;
+  appointments: AppointmentInfo[] | undefined;
   appointmentsError: Error | undefined;
 }
 
-// Define the initial state using that type
 const initialState: StaffState = {
-  authenticationHeader: undefined,
+  gettingUserInfo: false,
   userInfo: undefined,
+  authHeader: undefined,
+  userInfoError: undefined,
   updatingAppointment: false,
   updatingAppointmentError: undefined,
   updatedAppointment: undefined,
@@ -24,64 +32,134 @@ const initialState: StaffState = {
   appointmentsError: undefined,
 };
 
-// const registerWithSpecialist = createAsyncThunk(
-//   "users/fetchByIdStatus",
-//   async (specialistId, thunkAPI) => {
-//     const response = await registerAppointment(specialistId);
-//     return response.data;
-//   }
-// );
+export const loginThunk = createAsyncThunk<
+  UserInfo,
+  LoginDetails,
+  { rejectValue: Error }
+>("staff/login", async (loginDetais, thunkApi) => {
+  const authToken = createBasicAuthToken(loginDetais);
+  const response = await fetch(`http://localhost:8080/user`, {
+    method: "GET",
+    headers: {
+      authorization: authToken,
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+  const data = await response.json();
+  if (
+    response.status === 400 ||
+    response.status === 401 ||
+    response.status === 500
+  ) {
+    return thunkApi.rejectWithValue((await response.json()) as Error);
+  }
+
+  return data as UserInfo;
+});
+
+export const changeAppointmentStatusThunk = createAsyncThunk<
+  AppointmentInfo,
+  { appointmentId: number; status: AppointmentStatus },
+  {
+    state: RootState;
+  }
+>("staff/updateAppointment", async (input, thunkApi) => {
+  const response = await fetch(
+    `http://localhost:8080/appointments/${input.appointmentId}`,
+    {
+      method: "PATCH",
+      headers: {
+        authorization: `${thunkApi.getState().staff.authHeader}`,
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status: input.status }),
+    }
+  );
+  if (
+    response.status === 400 ||
+    response.status === 401 ||
+    response.status === 500
+  ) {
+    return thunkApi.rejectWithValue((await response.json()) as Error);
+  }
+  const data = await response.json();
+  return data as AppointmentInfo;
+});
 
 export const staffSlice = createSlice({
   name: "staff",
-  // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    setAppointments: (state, action: PayloadAction<Appointment[]>) => {
+    setStaffAppointments: (state, action: PayloadAction<AppointmentInfo[]>) => {
       state.appointments = action.payload;
       state.appointmentsError = undefined;
     },
     setAppointmentsError: (state, action: PayloadAction<Error>) => {
+      console.log(action);
       state.appointments = undefined;
       state.appointmentsError = action.payload;
     },
-    updateAppointment: (state) => {
-      state.updatingAppointment = true;
+    resetLoginError: (state) => {
+      state.userInfoError = undefined;
     },
-    updateAppointmentError: (state, action: PayloadAction<Error>) => {
-      state.updatingAppointment = false;
-      state.updatingAppointmentError = action.payload;
+    resetUpdatingError: (state) => {
+      state.updatingAppointmentError = undefined;
     },
-    updateAppointmentSuccess: (state, action: PayloadAction<Appointment>) => {
-      state.updatingAppointment = false;
-      state.updatedAppointment = action.payload;
-    },
-    setUserInfoAndAuthenticationHeader: (
-      state,
-      action: PayloadAction<{ userInfo: UserInfo; header: string }>
-    ) => {
-      const { userInfo, header } = action.payload;
-      state.userInfo = userInfo;
-      state.authenticationHeader = header;
-    },
-    resetStaffState: (state) => {
+    logout: (state) => {
       return initialState;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(loginThunk.pending, (state) => {
+      state.gettingUserInfo = true;
+    });
+    builder.addCase(loginThunk.fulfilled, (state, action) => {
+      state.gettingUserInfo = false;
+      state.userInfo = action.payload;
+      state.userInfoError = undefined;
+      state.authHeader = createBasicAuthToken({
+        username: action.meta.arg.username,
+        password: action.meta.arg.password,
+      });
+    });
+    builder.addCase(loginThunk.rejected, (state, action) => {
+      console.log(action);
+      state.gettingUserInfo = false;
+      state.userInfo = undefined;
+      state.userInfoError = action.error
+        ? new Error(action.error.message)
+        : undefined;
+    });
+    builder.addCase(changeAppointmentStatusThunk.pending, (state) => {
+      state.updatingAppointment = true;
+    });
+    builder.addCase(changeAppointmentStatusThunk.fulfilled, (state, action) => {
+      state.updatingAppointment = false;
+      state.appointments = state.appointments?.map((a) =>
+        a.appointmentId === action.payload.appointmentId ? action.payload : a
+      );
+      state.updatingAppointmentError = undefined;
+    });
+    builder.addCase(changeAppointmentStatusThunk.rejected, (state, action) => {
+      console.log(action);
+      state.updatingAppointment = false;
+      state.updatingAppointmentError = action.error
+        ? new Error(action.error.message)
+        : undefined;
+    });
   },
 });
 
 export const {
-  setAppointments,
+  resetLoginError,
+  setStaffAppointments,
   setAppointmentsError,
-  setUserInfoAndAuthenticationHeader,
-  resetStaffState,
-  updateAppointment,
-  updateAppointmentError,
-  updateAppointmentSuccess,
+  resetUpdatingError,
+  logout,
 } = staffSlice.actions;
 
-// Other code such as selectors can use the imported `RootState` type
 export const selectAuthenticationHeader = (state: RootState) =>
-  state.staff.authenticationHeader;
+  state.staff.authHeader;
 
 export default staffSlice.reducer;
