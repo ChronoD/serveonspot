@@ -22,7 +22,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<AppUser> reg(Principal principal) {
+    public ResponseEntity<AppUser> getUser(Principal principal) {
         Optional<AppUser> appUserOptional = appUserService.loadAppUserByUsername(principal.getName());
         if (appUserOptional.isPresent()) {
             return new ResponseEntity<>(appUserOptional.get(), HttpStatus.OK);

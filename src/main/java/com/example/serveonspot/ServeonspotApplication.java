@@ -26,10 +26,10 @@ public class ServeonspotApplication {
     @Bean
     public CommandLineRunner demo(AppUserRepository appUserRepository, BCryptPasswordEncoder encoder) {
         return (args) -> {
-            appUserRepository.save(new AppUser("admin", encoder.encode("admin"), "ADMIN", "ADMIN", null));
-            appUserRepository.save(new AppUser("1", encoder.encode("1"), "SPECIALIST", "SPECIALIST", new Specialist(SpecialistType.ONE_MINUTE)));
-            appUserRepository.save(new AppUser("5", encoder.encode("5"), "SPECIALIST", "SPECIALIST", new Specialist(SpecialistType.FIVE_MINUTES)));
-            appUserRepository.save(new AppUser("9", encoder.encode("9"), "SPECIALIST", "SPECIALIST", new Specialist(SpecialistType.NINE_MINUTES)));
+            appUserRepository.save(new AppUser("admin", encoder.encode("admin"), "ADMIN", null));
+            appUserRepository.save(new AppUser("1", encoder.encode("1"), "SPECIALIST", new Specialist(SpecialistType.ONE_MINUTE)));
+            appUserRepository.save(new AppUser("5", encoder.encode("5"), "SPECIALIST",  new Specialist(SpecialistType.FIVE_MINUTES)));
+            appUserRepository.save(new AppUser("9", encoder.encode("9"), "SPECIALIST",  new Specialist(SpecialistType.NINE_MINUTES)));
         };
     }
 

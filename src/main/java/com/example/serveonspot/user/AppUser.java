@@ -1,7 +1,9 @@
 package com.example.serveonspot.user;
 
 import com.example.serveonspot.specialist.Specialist;
+import com.example.serveonspot.utils.CustomAuthorityDeserializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,20 +29,18 @@ public class AppUser implements UserDetails {
 
     private String authority;
 
-    private String role;
-
     @OneToOne(optional = true, cascade = CascadeType.ALL)
     private Specialist specialist;
 
-    public AppUser(String username, String password, String authority, String role, Specialist specialist) {
+    public AppUser(String username, String password, String authority, Specialist specialist) {
         this.username = username;
         this.password = password;
         this.authority = authority;
-        this.role = role;
         this.specialist = specialist;
     }
 
     @Override
+    @JsonDeserialize(using = CustomAuthorityDeserializer.class)
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return AuthorityUtils.createAuthorityList(authority);
     }
