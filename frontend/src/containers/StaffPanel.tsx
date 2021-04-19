@@ -14,11 +14,11 @@ import { useAppSelector } from "../state/hooks";
 import {
   setStaffAppointments,
   logout,
-  changeAppointmentStatusThunk,
-  loginThunk,
+  setAppointmentStatusApi,
+  loginApi,
   resetLoginError,
   resetUpdatingError,
-  setAppointmentsError,
+  setStaffAppointmentsError,
 } from "../state/sliceStaff";
 
 interface Props {}
@@ -38,7 +38,7 @@ export function StaffPanel({}: Props) {
   const dispatch = useDispatch();
 
   function login(values: LoginDetails) {
-    dispatch(loginThunk(values));
+    dispatch(loginApi(values));
   }
 
   function closeLoginError() {
@@ -48,7 +48,7 @@ export function StaffPanel({}: Props) {
   const updateAppointment = (status: AppointmentStatus) => (
     appointmentId: number
   ) => {
-    dispatch(changeAppointmentStatusThunk({ appointmentId, status }));
+    dispatch(setAppointmentStatusApi({ appointmentId, status }));
   };
 
   function closeUpdatingAppointmentError() {
@@ -60,7 +60,7 @@ export function StaffPanel({}: Props) {
   }
 
   function watchAppointmentsError(error: Error) {
-    dispatch(setAppointmentsError(error));
+    dispatch(setStaffAppointmentsError(error));
   }
 
   function logOut(): void {

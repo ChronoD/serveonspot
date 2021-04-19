@@ -28,6 +28,8 @@ export function StaffAppointments({
   updatingError,
   closeUpdatingError,
 }: Props) {
+  const isAdmin = userInfo.authority === "ADMIN";
+
   return (
     <>
       <Modal
@@ -55,10 +57,9 @@ export function StaffAppointments({
             itemLayout="horizontal"
             dataSource={appointments}
             locale={{ emptyText: "Šiuo metu prisiregistravusių nėra." }}
-            renderItem={(appointment) => (
+            renderItem={(appointment, index) => (
               <List.Item>
                 <AppointmentsListCard
-                  userInfo={userInfo}
                   appointment={appointment}
                   startAppointment={startAppointment}
                   endAppointment={endAppointment}
@@ -67,6 +68,8 @@ export function StaffAppointments({
                     updating &&
                     updatingAppointmentId === appointment.appointmentId
                   }
+                  actionsDisabled={index !== 0 || isAdmin}
+                  isAdmin={isAdmin}
                 />
               </List.Item>
             )}

@@ -1,32 +1,32 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppointmentInfo, SpecialistInfo } from "./dataTypes";
-import type { AppDispatch, RootState } from "./store";
+import type { AppDispatch } from "./store";
 
 export interface CustomerState {
   gettingSpecialists: boolean;
   gettingSpecialistsError: Error | undefined;
   specialists: SpecialistInfo[] | undefined;
-  postingAppointment: boolean;
+  registeringAppointment: boolean;
   registeringSpecialistId: number | undefined;
-  appointmentError: Error | undefined;
+  registeringError: Error | undefined;
   appointmentInfo: AppointmentInfo | undefined;
   unregisteringAppointment: boolean;
-  unregisteringAppointmentError: Error | undefined;
+  unregisteringError: Error | undefined;
 }
 
 const initialState: CustomerState = {
   gettingSpecialists: false,
   gettingSpecialistsError: undefined,
   specialists: undefined,
-  postingAppointment: false,
+  registeringAppointment: false,
   registeringSpecialistId: undefined,
-  appointmentError: undefined,
+  registeringError: undefined,
   appointmentInfo: undefined,
   unregisteringAppointment: false,
-  unregisteringAppointmentError: undefined,
+  unregisteringError: undefined,
 };
 
-export const registerWithSpecialistThunk = createAsyncThunk<
+export const registerWithSpecialistApi = createAsyncThunk<
   AppointmentInfo,
   number,
   {
@@ -47,7 +47,7 @@ export const registerWithSpecialistThunk = createAsyncThunk<
   return data as AppointmentInfo;
 });
 
-export const unregisterWithSpecialistThunk = createAsyncThunk<
+export const unregisterWithSpecialistApi = createAsyncThunk<
   AppointmentInfo,
   number
 >("customer/unregisterAppointment", async (appointmentId: number) => {
@@ -79,61 +79,58 @@ export const customerSlice = createSlice({
     },
     specialistsError: (state, action: PayloadAction<Error>) => {
       state.gettingSpecialists = false;
-      state.appointmentError = action.payload;
+      state.registeringError = action.payload;
     },
     setRegisteringSpecialistId: (state, action: PayloadAction<number>) => {
       state.registeringSpecialistId = action.payload;
     },
     resetRegisteringError: (state) => {
-      state.appointmentError = undefined;
+      state.registeringError = undefined;
     },
-    watchAppointmentSuccess: (
+    gettingAppointmentSuccess: (
       state,
       action: PayloadAction<AppointmentInfo>
     ) => {
       state.appointmentInfo = action.payload;
     },
-    watchAppointmentError: (state, action: PayloadAction<Error>) => {
-      state.appointmentError = action.payload;
+    gettingAppointmentError: (state, action: PayloadAction<Error>) => {
+      state.registeringError = action.payload;
     },
     resetUnregisteringError: (state) => {
-      state.unregisteringAppointmentError = undefined;
+      state.unregisteringError = undefined;
     },
     resetCustomerState: (state) => {
       return initialState;
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(registerWithSpecialistThunk.pending, (state) => {
-      state.postingAppointment = true;
+    builder.addCase(registerWithSpecialistApi.pending, (state) => {
+      state.registeringAppointment = true;
     });
-    builder.addCase(registerWithSpecialistThunk.fulfilled, (state, action) => {
-      state.postingAppointment = false;
+    builder.addCase(registerWithSpecialistApi.fulfilled, (state, action) => {
+      state.registeringAppointment = false;
       state.registeringSpecialistId = undefined;
       state.appointmentInfo = action.payload;
-      state.appointmentError = undefined;
+      state.registeringError = undefined;
     });
-    builder.addCase(registerWithSpecialistThunk.rejected, (state, action) => {
-      state.postingAppointment = false;
+    builder.addCase(registerWithSpecialistApi.rejected, (state, action) => {
+      state.registeringAppointment = false;
       state.registeringSpecialistId = undefined;
-      state.appointmentError = action.error
+      state.registeringError = action.error
         ? new Error(action.error.message)
         : undefined;
     });
-    builder.addCase(unregisterWithSpecialistThunk.pending, (state) => {
+    builder.addCase(unregisterWithSpecialistApi.pending, (state) => {
       state.unregisteringAppointment = true;
     });
-    builder.addCase(
-      unregisterWithSpecialistThunk.fulfilled,
-      (state, action) => {
-        state.appointmentInfo = action.payload;
-        state.unregisteringAppointment = false;
-        state.unregisteringAppointmentError = undefined;
-      }
-    );
-    builder.addCase(unregisterWithSpecialistThunk.rejected, (state, action) => {
+    builder.addCase(unregisterWithSpecialistApi.fulfilled, (state, action) => {
+      state.appointmentInfo = action.payload;
       state.unregisteringAppointment = false;
-      state.unregisteringAppointmentError = action.error
+      state.unregisteringError = undefined;
+    });
+    builder.addCase(unregisterWithSpecialistApi.rejected, (state, action) => {
+      state.unregisteringAppointment = false;
+      state.unregisteringError = action.error
         ? new Error(action.error.message)
         : undefined;
     });
@@ -146,8 +143,8 @@ export const {
   specialistsError,
   setRegisteringSpecialistId,
   resetRegisteringError,
-  watchAppointmentSuccess,
-  watchAppointmentError,
+  gettingAppointmentSuccess,
+  gettingAppointmentError,
   resetUnregisteringError,
   resetCustomerState,
 } = customerSlice.actions;

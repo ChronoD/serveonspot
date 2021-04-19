@@ -1,30 +1,44 @@
 import { Button, Card, Col, List, Row } from "antd";
-import Modal from "antd/lib/modal/Modal";
-import { colorByAppointmentStatus } from "../../functions/utilFunctions";
+import {
+  colorByAppointmentStatus,
+  specialistTypeInfoBySpecialistType,
+} from "../../functions/utilFunctions";
 import { AppointmentInfo, UserInfo } from "../../state/dataTypes";
 
 interface Props {
-  userInfo: UserInfo;
   appointment: AppointmentInfo;
   startAppointment: (appointmentId: number) => void;
   endAppointment: (appointmentId: number) => void;
   cancelAppointment: (appointmentId: number) => void;
   updating: boolean;
+  actionsDisabled: boolean;
+  isAdmin: boolean;
 }
 
 export function AppointmentsListCard({
-  userInfo,
   appointment,
   startAppointment,
   endAppointment,
   cancelAppointment,
   updating,
+  actionsDisabled,
+  isAdmin,
 }: Props) {
-  const isAdmin = userInfo.authority === "ADMIN";
-  console.log(isAdmin);
-
   const borderColor = colorByAppointmentStatus(appointment.status);
-  console.log(borderColor);
+
+  const specialistTypeInfo = specialistTypeInfoBySpecialistType(
+    appointment.specialist.specialistType
+  );
+
+  const cancelDisabled =
+    appointment.status === "UNREGISTERED" ||
+    appointment.status === "FINISHED" ||
+    appointment.status === "CANCELLED" ||
+    actionsDisabled;
+
+  const startDisabled = appointment.status !== "REGISTERED" || actionsDisabled;
+  const fisnishDisabled = appointment.status !== "STARTED" || actionsDisabled;
+
   return (
     <Card
       bodyStyle={{ display: isAdmin ? "none" : undefined }}
@@ -32,32 +46,38 @@ export function AppointmentsListCard({
         width: 300,
         border: `5px solid ${borderColor}`,
       }}
-      title={`${appointment.appointmentId}: ${
+      title={`Nr. ${appointment.appointmentId}: ${
         appointment.status === "REGISTERED" ? "laukia" : "vyksta"
       }`}
       extra={
-        !isAdmin && (
-          <Button
-            onClick={() => cancelAppointment(appointment.appointmentId)}
-            loading={updating}
-            size="small"
-          >
-            atšaukti
-          </Button>
-        )
+        <>
+          {!isAdmin && (
+            <p>
+              <Button
+                disabled={cancelDisabled}
+                onClick={() => cancelAppointment(appointment.appointmentId)}
+                loading={updating}
+                size="small"
+              >
+                atšaukti
+              </Button>
+            </p>
+          )}
+          {isAdmin && <>{` ${specialistTypeInfo}`}</>}
+        </>
       }
     >
       {!isAdmin && (
         <>
           <Button
-            disabled={appointment.status === "STARTED"}
+            disabled={startDisabled}
             onClick={() => startAppointment(appointment.appointmentId)}
             loading={updating}
           >
             pradėti
           </Button>
           <Button
-            disabled={appointment.status !== "STARTED"}
+            disabled={fisnishDisabled}
             onClick={() => endAppointment(appointment.appointmentId)}
             loading={updating}
           >

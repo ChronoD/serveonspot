@@ -34,7 +34,7 @@ const initialState: StaffState = {
   appointmentsError: undefined,
 };
 
-export const loginThunk = createAsyncThunk<
+export const loginApi = createAsyncThunk<
   UserInfo,
   LoginDetails,
   { rejectValue: Error }
@@ -59,7 +59,7 @@ export const loginThunk = createAsyncThunk<
   return data as UserInfo;
 });
 
-export const changeAppointmentStatusThunk = createAsyncThunk<
+export const setAppointmentStatusApi = createAsyncThunk<
   AppointmentInfo,
   { appointmentId: number; status: AppointmentStatus },
   {
@@ -99,8 +99,7 @@ export const staffSlice = createSlice({
       state.appointments = action.payload;
       state.appointmentsError = undefined;
     },
-    setAppointmentsError: (state, action: PayloadAction<Error>) => {
-      console.log(action);
+    setStaffAppointmentsError: (state, action: PayloadAction<Error>) => {
       state.appointments = undefined;
       state.appointmentsError = action.payload;
     },
@@ -118,10 +117,10 @@ export const staffSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(loginThunk.pending, (state) => {
+    builder.addCase(loginApi.pending, (state) => {
       state.gettingUserInfo = true;
     });
-    builder.addCase(loginThunk.fulfilled, (state, action) => {
+    builder.addCase(loginApi.fulfilled, (state, action) => {
       state.gettingUserInfo = false;
       state.userInfo = action.payload;
       state.userInfoError = undefined;
@@ -130,17 +129,17 @@ export const staffSlice = createSlice({
         password: action.meta.arg.password,
       });
     });
-    builder.addCase(loginThunk.rejected, (state, action) => {
+    builder.addCase(loginApi.rejected, (state, action) => {
       state.gettingUserInfo = false;
       state.userInfo = undefined;
       state.userInfoError = action.error
         ? new Error(action.error.message)
         : undefined;
     });
-    builder.addCase(changeAppointmentStatusThunk.pending, (state) => {
+    builder.addCase(setAppointmentStatusApi.pending, (state) => {
       state.updatingAppointment = true;
     });
-    builder.addCase(changeAppointmentStatusThunk.fulfilled, (state, action) => {
+    builder.addCase(setAppointmentStatusApi.fulfilled, (state, action) => {
       state.updatingAppointment = false;
       state.updatingAppointmentId = undefined;
       state.appointments = state.appointments?.map((a) =>
@@ -148,7 +147,7 @@ export const staffSlice = createSlice({
       );
       state.updatingAppointmentError = undefined;
     });
-    builder.addCase(changeAppointmentStatusThunk.rejected, (state, action) => {
+    builder.addCase(setAppointmentStatusApi.rejected, (state, action) => {
       state.updatingAppointmentId = undefined;
       state.updatingAppointment = false;
       state.updatingAppointmentError = action.error
@@ -161,7 +160,7 @@ export const staffSlice = createSlice({
 export const {
   resetLoginError,
   setStaffAppointments,
-  setAppointmentsError,
+  setStaffAppointmentsError,
   setUpdatingAppointmentId,
   resetUpdatingError,
   logout,

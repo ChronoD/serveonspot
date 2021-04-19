@@ -7,7 +7,11 @@ import { store } from "./state/store";
 function App() {
   return (
     <div className="App">
-      <ErrorBoundary FallbackComponent={() => <p>whoops</p>}>
+      <ErrorBoundary
+        FallbackComponent={() => (
+          <p>Įvyko netikėta klaida. Perkraukite puslapį</p>
+        )}
+      >
         <Provider store={store}>
           <MainPanel />
         </Provider>

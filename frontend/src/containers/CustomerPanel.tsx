@@ -6,10 +6,10 @@ import {
   specialistsError,
   resetRegisteringError,
   resetCustomerState,
-  registerWithSpecialistThunk,
-  unregisterWithSpecialistThunk,
-  watchAppointmentSuccess,
-  watchAppointmentError,
+  registerWithSpecialistApi,
+  unregisterWithSpecialistApi,
+  gettingAppointmentSuccess,
+  gettingAppointmentError,
   resetUnregisteringError,
 } from "../state/sliceCustomer";
 import {
@@ -26,12 +26,12 @@ export function CustomerPanel() {
     gettingSpecialists,
     gettingSpecialistsError,
     specialists,
-    postingAppointment,
+    registeringAppointment,
     registeringSpecialistId,
-    appointmentError,
+    registeringError,
     appointmentInfo,
     unregisteringAppointment,
-    unregisteringAppointmentError,
+    unregisteringError,
   } = useAppSelector((state) => state.customer);
 
   const dispatch = useDispatch();
@@ -45,7 +45,7 @@ export function CustomerPanel() {
   }
 
   function registerWithSpecialist(specialistId: number) {
-    dispatch(registerWithSpecialistThunk(specialistId));
+    dispatch(registerWithSpecialistApi(specialistId));
   }
 
   function closeRegisteringError() {
@@ -53,15 +53,15 @@ export function CustomerPanel() {
   }
 
   function watchAppointmentInfo(appointmentInfo: AppointmentInfo) {
-    dispatch(watchAppointmentSuccess(appointmentInfo));
+    dispatch(gettingAppointmentSuccess(appointmentInfo));
   }
 
   function watchAppointmentInfoError(error: Error) {
-    dispatch(watchAppointmentError(error));
+    dispatch(gettingAppointmentError(error));
   }
 
   function unregister(appointmentId: number) {
-    dispatch(unregisterWithSpecialistThunk(appointmentId));
+    dispatch(unregisterWithSpecialistApi(appointmentId));
   }
 
   function closeUnregisteringError() {
@@ -114,9 +114,9 @@ export function CustomerPanel() {
       {specialists && !appointmentInfo && (
         <CustomerSpecialists
           registerAppointment={registerWithSpecialist}
-          registering={postingAppointment}
+          registering={registeringAppointment}
           registeringSpecialistId={registeringSpecialistId}
-          registeringError={appointmentError}
+          registeringError={registeringError}
           closeRegisteringError={closeRegisteringError}
           loadingSpecialists={gettingSpecialists}
           loadingSpecialistsError={gettingSpecialistsError}
@@ -130,7 +130,7 @@ export function CustomerPanel() {
             unregister(appointmentInfo.appointmentId)
           }
           unregistering={unregisteringAppointment}
-          unregisteringError={unregisteringAppointmentError}
+          unregisteringError={unregisteringError}
           closeUnregisteringError={closeUnregisteringError}
           returnToMenu={returnToCustomerMenu}
         />

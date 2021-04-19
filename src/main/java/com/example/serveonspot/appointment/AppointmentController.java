@@ -33,6 +33,7 @@ public class AppointmentController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SPECIALIST')")
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<List<AppointmentInfoOutput>> trackOngoingAppointments() {
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Optional<AppUser> userOptional = appUserService.loadAppUserByUsername(authentication.getName());
 
@@ -55,6 +56,7 @@ public class AppointmentController {
 
     @PostMapping
     public AppointmentInfoOutput registerAppointment(@RequestBody @Valid AppointmentRegistrationInput booking) {
+
         return appointmentService.registerAnAppointment(booking.getSpecialistId());
     }
 

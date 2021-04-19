@@ -16,8 +16,6 @@ export function initializeCustomerSpecialistsSource(
   };
   specialistsSource.onmessage = (message) => {
     const data = JSON.parse(message.data);
-    console.log(data);
-
     onSuccess(data);
   };
   return specialistsSource;
@@ -37,8 +35,6 @@ export function initCustomerAppointmentSource(
   };
   appointmentsSource.onmessage = (message) => {
     const data = JSON.parse(message.data);
-    console.log("appointment", data);
-
     onSuccess(data);
   };
   return appointmentsSource;
@@ -66,8 +62,6 @@ export function initStaffAppointmentsSource(
   };
   appointmentsSource.onmessage = (message: any) => {
     const data = JSON.parse(message.data);
-    // console.log("appointment", data);
-
     onSuccess(data);
   };
   return appointmentsSource;

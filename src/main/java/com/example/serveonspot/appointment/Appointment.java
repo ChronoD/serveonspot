@@ -12,7 +12,6 @@ import java.util.Objects;
 @Entity
 @NoArgsConstructor
 public class Appointment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int appointmentId;
