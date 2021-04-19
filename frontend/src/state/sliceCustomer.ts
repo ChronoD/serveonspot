@@ -1,6 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import axios from "axios";
 import { Appointment, AppointmentInfo, Specialist } from "./dataTypes";
 import type { RootState } from "./store";
+
+type ErrorText = {
+  message: string;
+};
 
 // Define a type for the slice state
 export interface CustomerState {
@@ -26,13 +31,49 @@ const initialState: CustomerState = {
   unregisteringAppointmentError: undefined,
 };
 
-// const registerWithSpecialist = createAsyncThunk(
-//   "users/fetchByIdStatus",
-//   async (specialistId, thunkAPI) => {
-//     const response = await registerAppointment(specialistId);
-//     return response.data;
-//   }
-// );
+export const registerWithSpecialistThunk = createAsyncThunk<
+  AppointmentInfo,
+  number,
+  {
+    state: CustomerState;
+  }
+>("users/registerWithSpecialist", regA);
+
+export async function regA(specialistId: number): Promise<AppointmentInfo> {
+  const response = await fetch(`http://localhost:8080/appointments`, {
+    method: "POST", // or 'PUT'
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ specialistId: specialistId }),
+  });
+
+  // Get the JSON from the response:
+  const data = await response.json();
+
+  // Return result:
+  return data as AppointmentInfo;
+}
+
+//   axios
+//     .post(
+//       `http://localhost:8080/appointments`,
+//       { specialistId: specialistId },
+//       {
+//         headers: { "Access-Control-Allow-Origin": "*" },
+//       }
+//     )
+//     .then((res) => {
+//       // console.log(res);
+//       const data = res.data;
+//       // onSuccess(data);
+//     })
+//     .catch((error) => {
+//       // console.log(error);
+//       onError(error);
+//     });
+// }
 
 export const customerSlice = createSlice({
   name: "customer",
@@ -80,6 +121,43 @@ export const customerSlice = createSlice({
       return initialState;
     },
     // Use the PayloadAction type to declare the contents of `action.payload`
+  },
+  extraReducers: (builder) => {
+    builder.addCase(registerWithSpecialistThunk.pending, (state) => {
+      state.postingAppointment = true;
+    });
+    builder.addCase(registerWithSpecialistThunk.fulfilled, (state, action) => {
+      state.postingAppointment = false;
+      state.appointmentInfo = action.payload;
+    });
+    builder.addCase(registerWithSpecialistThunk.rejected, (state, action) => {
+      state.postingAppointment = false;
+      state.appointmentError = action.error
+        ? new Error(action.error.message)
+        : undefined;
+    });
+    // {
+    //   [registerWithSpecialistThunk.pending.toString()]: (state) => {
+    //     state.postingAppointment = true;
+    //   },
+    //   [registerWithSpecialistThunk.fulfilled.toString()]: (
+    //     state,
+    //     action: PayloadAction<AppointmentInfo>
+    //   ) => {
+    //     console.log("here");
+    //     state.postingAppointment = false;
+    //     state.appointmentInfo = action.payload;
+    //   },
+    //   [registerWithSpecialistThunk.rejected.toString()]: (
+    //     state,
+    //     action: PayloadAction<Error>
+    //   ) => {
+    //     console.log("err");
+
+    //     state.postingAppointment = false;
+    //     state.appointmentError = action.payload;
+    //   },
+    // },
   },
 });
 

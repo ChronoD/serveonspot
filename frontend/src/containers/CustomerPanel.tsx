@@ -9,6 +9,7 @@ import {
   unregisteringSuccess,
   unregisteringError,
   resetCustomerState,
+  registerWithSpecialistThunk,
 } from "../state/sliceCustomer";
 import {
   initializeSpecialistsSource,
@@ -36,13 +37,17 @@ export function CustomerPanel({}: Props) {
 
   const dispatch = useDispatch();
 
+  // function registerWithSpecialist(specialistId: number) {
+  //   registerAppointment(
+  //     specialistId,
+  //     (appointmentInfo: AppointmentInfo) =>
+  //       dispatch(postingAppointmentSuccess(appointmentInfo)),
+  //     (error: Error) => dispatch(postingAppointmentError(error))
+  //   );
+  // }
+
   function registerWithSpecialist(specialistId: number) {
-    registerAppointment(
-      specialistId,
-      (appointmentInfo: AppointmentInfo) =>
-        dispatch(postingAppointmentSuccess(appointmentInfo)),
-      (error: Error) => dispatch(postingAppointmentError(error))
-    );
+    dispatch(registerWithSpecialistThunk(specialistId));
   }
 
   function trackAppointmentSuccess(appointmentInfo: AppointmentInfo) {
