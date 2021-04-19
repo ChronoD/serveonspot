@@ -29,6 +29,7 @@ export function StaffPanel({}: Props) {
     userInfo,
     userInfoError,
     updatingAppointment,
+    updatingAppointmentId,
     updatingAppointmentError,
     appointments,
     appointmentsError,
@@ -103,6 +104,7 @@ export function StaffPanel({}: Props) {
               endAppointment={updateAppointment("FINISHED")}
               cancelAppointment={updateAppointment("CANCELLED")}
               updating={updatingAppointment}
+              updatingAppointmentId={updatingAppointmentId}
               updatingError={updatingAppointmentError}
               closeUpdatingError={closeUpdatingAppointmentError}
             />

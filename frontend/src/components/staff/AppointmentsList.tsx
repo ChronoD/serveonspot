@@ -1,6 +1,7 @@
 import { Button, Card, Col, List, Row } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { AppointmentInfo, UserInfo } from "../../state/dataTypes";
+import { AppointmentsListCard } from "./AppointmentsListCard";
 
 interface Props {
   userInfo: UserInfo;
@@ -10,6 +11,7 @@ interface Props {
   endAppointment: (appointmentId: number) => void;
   cancelAppointment: (appointmentId: number) => void;
   updating: boolean;
+  updatingAppointmentId: number | undefined;
   updatingError: Error | undefined;
   closeUpdatingError: () => void;
 }
@@ -22,10 +24,10 @@ export function StaffAppointments({
   endAppointment,
   cancelAppointment,
   updating,
+  updatingAppointmentId,
   updatingError,
   closeUpdatingError,
 }: Props) {
-  const isAdmin = userInfo.authority === "ADMIN";
   return (
     <>
       <Modal
@@ -55,55 +57,17 @@ export function StaffAppointments({
             locale={{ emptyText: "Šiuo metu prisiregistravusių nėra." }}
             renderItem={(appointment) => (
               <List.Item>
-                <Card
-                  bodyStyle={{ display: isAdmin ? "none" : undefined }}
-                  style={{
-                    width: 300,
-                    border:
-                      appointment.status === "STARTED"
-                        ? "5px solid green"
-                        : "5px solid yellow",
-                  }}
-                  title={`${appointment.appointmentId}: ${
-                    appointment.status === "REGISTERED" ? "laukia" : "vyksta"
-                  }`}
-                  extra={
-                    !isAdmin && (
-                      <Button
-                        onClick={() =>
-                          cancelAppointment(appointment.appointmentId)
-                        }
-                        loading={updating}
-                        size="small"
-                      >
-                        atšaukti
-                      </Button>
-                    )
+                <AppointmentsListCard
+                  userInfo={userInfo}
+                  appointment={appointment}
+                  startAppointment={startAppointment}
+                  endAppointment={endAppointment}
+                  cancelAppointment={cancelAppointment}
+                  updating={
+                    updating &&
+                    updatingAppointmentId === appointment.appointmentId
                   }
-                >
-                  {!isAdmin && (
-                    <>
-                      <Button
-                        disabled={appointment.status === "STARTED"}
-                        onClick={() =>
-                          startAppointment(appointment.appointmentId)
-                        }
-                        loading={updating}
-                      >
-                        pradėti
-                      </Button>
-                      <Button
-                        disabled={appointment.status !== "STARTED"}
-                        onClick={() =>
-                          endAppointment(appointment.appointmentId)
-                        }
-                        loading={updating}
-                      >
-                        baigti
-                      </Button>
-                    </>
-                  )}
-                </Card>
+                />
               </List.Item>
             )}
           />

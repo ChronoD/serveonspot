@@ -20,7 +20,7 @@ public class UserController {
         this.appUserService = appUserService;
     }
 
-    @GetMapping("/user")
+    @GetMapping("/user")    
     public ResponseEntity<AppUser> reg(Principal principal) {
         AppUser appUser = appUserService.loadAppUserByUsername(principal.getName());
         return new ResponseEntity<>(appUser, HttpStatus.OK);

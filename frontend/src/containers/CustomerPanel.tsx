@@ -27,6 +27,7 @@ export function CustomerPanel() {
     gettingSpecialistsError,
     specialists,
     postingAppointment,
+    registeringSpecialistId,
     appointmentError,
     appointmentInfo,
     unregisteringAppointment,
@@ -115,6 +116,7 @@ export function CustomerPanel() {
         <CustomerSpecialists
           registerAppointment={registerWithSpecialist}
           registering={postingAppointment}
+          registeringSpecialistId={registeringSpecialistId}
           registeringError={appointmentError}
           closeRegisteringError={closeRegisteringError}
           loadingSpecialists={gettingSpecialists}

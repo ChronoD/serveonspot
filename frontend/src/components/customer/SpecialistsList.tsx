@@ -5,6 +5,7 @@ import { Specialist } from "../../state/dataTypes";
 interface Props {
   registerAppointment: (specialistId: number) => void;
   registering: boolean;
+  registeringSpecialistId: number | undefined;
   registeringError: Error | undefined;
   closeRegisteringError: () => void;
   loadingSpecialists: boolean;
@@ -15,6 +16,7 @@ interface Props {
 export function CustomerSpecialists({
   registerAppointment,
   registering,
+  registeringSpecialistId,
   registeringError,
   closeRegisteringError,
   specialists,
@@ -39,14 +41,14 @@ export function CustomerSpecialists({
               dataSource={specialists}
               renderItem={(spec) => (
                 <List.Item>
-                  <Card
-                    title={spec.specialistInfo}
-                    style={{ border: "5px solid green" }}
-                  >
+                  <Card title={spec.specialistInfo}>
                     <Button
                       type="primary"
                       onClick={() => registerAppointment(spec.specialistId)}
-                      loading={registering}
+                      loading={
+                        registering &&
+                        registeringSpecialistId === spec.specialistId
+                      }
                     >
                       Registruotis
                     </Button>

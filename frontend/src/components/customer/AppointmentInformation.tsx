@@ -1,5 +1,6 @@
 import { Button, Card } from "antd";
 import Modal from "antd/lib/modal/Modal";
+import { colorByAppointmentStatus } from "../../functions/utilFunctions";
 import { AppointmentInfo } from "../../state/dataTypes";
 
 interface Props {
@@ -26,6 +27,7 @@ export function AppointmentInformation({
     status,
     approximateTimeLeft,
   } = appointmentInfo;
+  const borderColor = colorByAppointmentStatus(status);
 
   return (
     <>
@@ -40,7 +42,7 @@ export function AppointmentInformation({
         title={`${specialist.specialistInfo}`}
         style={{
           width: 300,
-          border: status === "STARTED" ? "5px solid green" : "5px solid yellow",
+          border: `5px solid ${borderColor}`,
         }}
       >
         <>

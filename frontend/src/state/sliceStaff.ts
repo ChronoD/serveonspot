@@ -6,7 +6,7 @@ import {
   LoginDetails,
   UserInfo,
 } from "./dataTypes";
-import type { RootState } from "./store";
+import type { AppDispatch, RootState } from "./store";
 
 export interface StaffState {
   gettingUserInfo: boolean;
@@ -14,6 +14,7 @@ export interface StaffState {
   authHeader: string | undefined;
   userInfoError: Error | undefined;
   updatingAppointment: boolean;
+  updatingAppointmentId: number | undefined;
   updatingAppointmentError: Error | undefined;
   updatedAppointment: AppointmentInfo | undefined;
   appointments: AppointmentInfo[] | undefined;
@@ -26,6 +27,7 @@ const initialState: StaffState = {
   authHeader: undefined,
   userInfoError: undefined,
   updatingAppointment: false,
+  updatingAppointmentId: undefined,
   updatingAppointmentError: undefined,
   updatedAppointment: undefined,
   appointments: undefined,
@@ -61,9 +63,11 @@ export const changeAppointmentStatusThunk = createAsyncThunk<
   AppointmentInfo,
   { appointmentId: number; status: AppointmentStatus },
   {
+    dispatch: AppDispatch;
     state: RootState;
   }
 >("staff/updateAppointment", async (input, thunkApi) => {
+  thunkApi.dispatch(setUpdatingAppointmentId(input.appointmentId));
   const response = await fetch(
     `http://localhost:8080/appointments/${input.appointmentId}`,
     {
@@ -100,6 +104,9 @@ export const staffSlice = createSlice({
       state.appointments = undefined;
       state.appointmentsError = action.payload;
     },
+    setUpdatingAppointmentId: (state, action: PayloadAction<number>) => {
+      state.updatingAppointmentId = action.payload;
+    },
     resetLoginError: (state) => {
       state.userInfoError = undefined;
     },
@@ -124,7 +131,6 @@ export const staffSlice = createSlice({
       });
     });
     builder.addCase(loginThunk.rejected, (state, action) => {
-      console.log(action);
       state.gettingUserInfo = false;
       state.userInfo = undefined;
       state.userInfoError = action.error
@@ -136,13 +142,14 @@ export const staffSlice = createSlice({
     });
     builder.addCase(changeAppointmentStatusThunk.fulfilled, (state, action) => {
       state.updatingAppointment = false;
+      state.updatingAppointmentId = undefined;
       state.appointments = state.appointments?.map((a) =>
         a.appointmentId === action.payload.appointmentId ? action.payload : a
       );
       state.updatingAppointmentError = undefined;
     });
     builder.addCase(changeAppointmentStatusThunk.rejected, (state, action) => {
-      console.log(action);
+      state.updatingAppointmentId = undefined;
       state.updatingAppointment = false;
       state.updatingAppointmentError = action.error
         ? new Error(action.error.message)
@@ -155,6 +162,7 @@ export const {
   resetLoginError,
   setStaffAppointments,
   setAppointmentsError,
+  setUpdatingAppointmentId,
   resetUpdatingError,
   logout,
 } = staffSlice.actions;

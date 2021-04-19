@@ -1,12 +1,14 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppointmentInfo, Specialist } from "./dataTypes";
-import type { RootState } from "./store";
+import { setUpdatingAppointmentId } from "./sliceStaff";
+import type { AppDispatch, RootState } from "./store";
 
 export interface CustomerState {
   gettingSpecialists: boolean;
   gettingSpecialistsError: Error | undefined;
   specialists: Specialist[] | undefined;
   postingAppointment: boolean;
+  registeringSpecialistId: number | undefined;
   appointmentError: Error | undefined;
   appointmentInfo: AppointmentInfo | undefined;
   unregisteringAppointment: boolean;
@@ -18,6 +20,7 @@ const initialState: CustomerState = {
   gettingSpecialistsError: undefined,
   specialists: undefined,
   postingAppointment: false,
+  registeringSpecialistId: undefined,
   appointmentError: undefined,
   appointmentInfo: undefined,
   unregisteringAppointment: false,
@@ -28,13 +31,11 @@ export const registerWithSpecialistThunk = createAsyncThunk<
   AppointmentInfo,
   number,
   {
+    dispatch: AppDispatch;
     state: CustomerState;
   }
->("customer/register", postRegister);
-
-export async function postRegister(
-  specialistId: number
-): Promise<AppointmentInfo> {
+>("customer/register", async (specialistId: number, thunkApi: any) => {
+  thunkApi.dispatch(setRegisteringSpecialistId(specialistId));
   const response = await fetch(`http://localhost:8080/appointments`, {
     method: "POST",
     headers: {
@@ -45,19 +46,12 @@ export async function postRegister(
   });
   const data = await response.json();
   return data as AppointmentInfo;
-}
+});
 
 export const unregisterWithSpecialistThunk = createAsyncThunk<
   AppointmentInfo,
-  number,
-  {
-    state: CustomerState;
-  }
->("customer/unregisterAppointment", patchUnregister);
-
-export async function patchUnregister(
-  appointmentId: number
-): Promise<AppointmentInfo> {
+  number
+>("customer/unregisterAppointment", async (appointmentId: number) => {
   const response = await fetch(
     `http://localhost:8080/appointments/${appointmentId}`,
     {
@@ -71,7 +65,7 @@ export async function patchUnregister(
   );
   const data = await response.json();
   return data as AppointmentInfo;
-}
+});
 
 export const customerSlice = createSlice({
   name: "customer",
@@ -87,6 +81,9 @@ export const customerSlice = createSlice({
     specialistsError: (state, action: PayloadAction<Error>) => {
       state.gettingSpecialists = false;
       state.appointmentError = action.payload;
+    },
+    setRegisteringSpecialistId: (state, action: PayloadAction<number>) => {
+      state.registeringSpecialistId = action.payload;
     },
     resetRegisteringError: (state) => {
       state.appointmentError = undefined;
@@ -113,11 +110,13 @@ export const customerSlice = createSlice({
     });
     builder.addCase(registerWithSpecialistThunk.fulfilled, (state, action) => {
       state.postingAppointment = false;
+      state.registeringSpecialistId = undefined;
       state.appointmentInfo = action.payload;
       state.appointmentError = undefined;
     });
     builder.addCase(registerWithSpecialistThunk.rejected, (state, action) => {
       state.postingAppointment = false;
+      state.registeringSpecialistId = undefined;
       state.appointmentError = action.error
         ? new Error(action.error.message)
         : undefined;
@@ -146,6 +145,7 @@ export const {
   gettingSpecialists,
   specialistsSuccess,
   specialistsError,
+  setRegisteringSpecialistId,
   resetRegisteringError,
   watchAppointmentSuccess,
   watchAppointmentError,
