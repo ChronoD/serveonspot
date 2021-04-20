@@ -44,5 +44,6 @@ class UserControllerTests {
     }
 
 
-    // TO DO: test anonymou
+// TODO test anonymous
+
 }

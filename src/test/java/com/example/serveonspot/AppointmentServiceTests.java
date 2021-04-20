@@ -13,16 +13,6 @@ import java.util.List;
 @SpringBootTest
 class AppointmentServiceTests {
 
-    @InjectMocks
-    private AppointmentService appointmentService;
-    @Mock
-    private AppointmentRepository appointmentRepository;
-
-    private final List<Appointment> appointmentList = Arrays.asList(new Appointment(), new Appointment());
-//
-//	@Test
-//	void getsOngoingAppointments() {
-//		Mockito.when(appointmentRepository.findAll()).thenReturn();
-//	}
+// TODO test logic
 
 }

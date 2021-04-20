@@ -19,7 +19,6 @@ class AppointmentsControllerTests {
     @Autowired
     private TestRestTemplate template;
 
-
     @Test
     public void givenAuthRequestOnPrivateService_shouldFailWith401() throws Exception {
         ResponseEntity<AppUser> result = template.withBasicAuth("ADMIN", "ADMIN")
@@ -27,13 +26,4 @@ class AppointmentsControllerTests {
         assertEquals(HttpStatus.UNAUTHORIZED, result.getStatusCode());
     }
 
-//    @Test
-//    public void givenAuthRequestOnPrivateService_shouldSucceedWith200() throws Exception {
-//        ResponseEntity<AppUser> result = template.withBasicAuth("admin", "admin")
-//                .getForEntity("/api/appointments", AppUser.class);
-//        assertEquals(HttpStatus.OK, result.getStatusCode());
-//    }
-
-
-    
 }

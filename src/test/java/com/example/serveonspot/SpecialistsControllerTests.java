@@ -13,16 +13,5 @@ import java.util.List;
 @SpringBootTest
 class SpecialistsControllerTests {
 
-    @InjectMocks
-    private AppointmentService appointmentService;
-    @Mock
-    private AppointmentRepository appointmentRepository;
-
-    private final List<Appointment> appointmentList = Arrays.asList(new Appointment(), new Appointment());
-//
-//	@Test
-//	void getsOngoingAppointments() {
-//		Mockito.when(appointmentRepository.findAll()).thenReturn();
-//	}
-
+// TODO
 }
