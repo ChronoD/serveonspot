@@ -40,7 +40,7 @@ export const loginApi = createAsyncThunk<
   { rejectValue: Error }
 >("staff/login", async (loginDetais, thunkApi) => {
   const authToken = createBasicAuthToken(loginDetais);
-  const response = await fetch(`http://localhost:8080/api/user`, {
+  const response = await fetch(`https://serve-on-spot.herokuapp.com/api/user`, {
     method: "GET",
     headers: {
       authorization: authToken,
@@ -69,7 +69,7 @@ export const setAppointmentStatusApi = createAsyncThunk<
 >("staff/updateAppointment", async (input, thunkApi) => {
   thunkApi.dispatch(setUpdatingAppointmentId(input.appointmentId));
   const response = await fetch(
-    `http://localhost:8080/api/appointments/${input.appointmentId}`,
+    `https://serve-on-spot.herokuapp.com/api/appointments/${input.appointmentId}`,
     {
       method: "PATCH",
       headers: {

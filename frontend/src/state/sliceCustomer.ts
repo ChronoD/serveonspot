@@ -35,14 +35,17 @@ export const registerWithSpecialistApi = createAsyncThunk<
   }
 >("customer/register", async (specialistId: number, thunkApi: any) => {
   thunkApi.dispatch(setRegisteringSpecialistId(specialistId));
-  const response = await fetch(`http://localhost:8080/api/appointments`, {
-    method: "POST",
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ specialistId: specialistId }),
-  });
+  const response = await fetch(
+    `https://serve-on-spot.herokuapp.com/api/appointments`,
+    {
+      method: "POST",
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ specialistId: specialistId }),
+    }
+  );
   const data = await response.json();
   return data as AppointmentInfo;
 });
@@ -52,7 +55,7 @@ export const unregisterWithSpecialistApi = createAsyncThunk<
   number
 >("customer/unregisterAppointment", async (appointmentId: number) => {
   const response = await fetch(
-    `http://localhost:8080/api/appointments/${appointmentId}`,
+    `https://serve-on-spot.herokuapp.com/api/appointments/${appointmentId}`,
     {
       method: "PATCH",
       headers: {
