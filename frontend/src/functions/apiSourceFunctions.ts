@@ -2,14 +2,14 @@ import { AppointmentInfo, SpecialistInfo } from "../state/dataTypes";
 import { EventSourcePolyfill } from "event-source-polyfill";
 
 export function initializeCustomerSpecialistsSource(
-  onSuccess: (specialists: SpecialistInfo[]) => void,
-  onError: (error: Error) => void
+  onSuccess: (specialists: SpecialistInfo[]) => void
+  // onError: (error: Error) => void
 ): EventSource {
   const specialistsSource = new EventSource(
     "http://127.0.0.1:8080/api/specialists"
   );
   specialistsSource.onerror = () => {
-    onError(new Error("Nepavyko gauti specialistų duomenų"));
+    // onError(new Error("Nepavyko gauti specialistų duomenų"));
     if (specialistsSource.readyState === 2) {
       setTimeout(initializeCustomerSpecialistsSource, 300);
     }

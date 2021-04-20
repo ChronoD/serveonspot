@@ -77,8 +77,8 @@ export function CustomerPanel() {
   useEffect(() => {
     if (!appointmentInfo) {
       specialistsSource = initializeCustomerSpecialistsSource(
-        watchSpecialistsSuccess,
-        watchSpecialistsError
+        watchSpecialistsSuccess
+        // watchSpecialistsError
       );
     } else {
       specialistsSource && specialistsSource.close();
