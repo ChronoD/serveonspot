@@ -6,7 +6,7 @@ export function initializeCustomerSpecialistsSource(
   // onError: (error: Error) => void
 ): EventSource {
   const specialistsSource = new EventSource(
-    "http://127.0.0.1:8080/api/specialists"
+    "https://serve-on-spot.herokuapp.com/api/specialists"
   );
   specialistsSource.onerror = () => {
     // onError(new Error("Nepavyko gauti specialistų duomenų"));
@@ -26,7 +26,7 @@ export function initCustomerAppointmentSource(
   onSuccess: (appointmentInfo: AppointmentInfo) => void
 ): EventSource {
   const appointmentsSource = new EventSource(
-    `http://127.0.0.1:8080/api/appointments/${appointmentId}`
+    `https://serve-on-spot.herokuapp.com/api/appointments/${appointmentId}`
   );
   appointmentsSource.onerror = () => {
     if (appointmentsSource.readyState === 2) {
@@ -46,7 +46,7 @@ export function initStaffAppointmentsSource(
   onError: (error: Error) => void
 ): EventSource {
   const appointmentsSource = new EventSourcePolyfill(
-    `http://127.0.0.1:8080/api/appointments`,
+    `https://serve-on-spot.herokuapp.com/api/appointments`,
     {
       headers: {
         "Access-Control-Allow-Origin": "*",
