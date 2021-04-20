@@ -1,6 +1,9 @@
 import { Button, Card } from "antd";
 import Modal from "antd/lib/modal/Modal";
-import { colorByAppointmentStatus } from "../../functions/utilFunctions";
+import {
+  colorByAppointmentStatus,
+  specialistTypeInfoBySpecialistType,
+} from "../../functions/utilFunctions";
 import { AppointmentInfo } from "../../state/dataTypes";
 
 interface Props {
@@ -38,7 +41,7 @@ export function AppointmentInformation({
         <p>Įvyko klaida, pabandykite vėliau</p>
       </Modal>
       <Card
-        title={`${specialist.specialistType} specialistas`}
+        title={specialistTypeInfoBySpecialistType(specialist.specialistType)}
         style={{
           width: 300,
           border: `5px solid ${borderColor}`,
