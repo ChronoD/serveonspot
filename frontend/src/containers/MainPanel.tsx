@@ -36,7 +36,7 @@ export function MainPanel({}: Props) {
           {customerMode && <CustomerPanel />}
         </Row>
       </Content>
-      <Footer>Serve-On-Spot App, 2021</Footer>
+      <Footer>Serve-On-Spot App,2 2021</Footer>
     </Layout>
   );
 }
