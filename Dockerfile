@@ -1,9 +1,8 @@
 # Build stage 1
-FROM node:18-slim as build_front
+FROM node:14.18 as build_front
 WORKDIR /react-app
 COPY ./frontend ./
 RUN yarn install
-RUN ls -la /react-app
 RUN yarn react-scripts build
 
 
@@ -19,7 +18,7 @@ mvn -f /home/app/pom.xml clean package
 
 # Package stage
 FROM openjdk:11-jre-slim
-COPY --from=build_back /home/app/target/andrejusdemoproject-0.0.1-SNAPSHOT.jar /usr/local/lib/andrejusdemoproject.jar
+COPY --from=build_back /home/app/target/serveonspot-0.0.1-SNAPSHOT.jar /usr/local/lib/serveonspot-0.0.1-SNAPSHOT.jar
 RUN apt-get update
-EXPOSE 8081
-ENTRYPOINT ["java","-jar","/usr/local/lib/andrejusdemoproject.jar"]
+EXPOSE 8080
+ENTRYPOINT ["java","-jar","/usr/local/lib/serveonspot-0.0.1-SNAPSHOT.jar"]
